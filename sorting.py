@@ -19,28 +19,45 @@ def insertion_sort(collection):
 
 
 def merge(collection, p, q, r):
+    """
+    Merges two sorted portions of a collection in place.
+    :param collection: The collection to sort.
+    :param p: The first index first array.
+    :param q: The last index of the first array.
+    :param r: The last index of the second array.
+    """
     n1 = q - p + 1
     n2 = r - q
-    L = [None] * (n1 + 1)
-    R = [None] * (n2 + 1)
+    left_array = [None] * (n1 + 1)
+    right_array = [None] * (n2 + 1)
     for i in range(n1):
-        L[i] = collection[p + i]
+        left_array[i] = collection[p + i]
     for j in range(n2):
-        R[j] = collection[q + j + 1]
-    L[n1] = sys.maxsize
-    R[n2] = sys.maxsize
+        right_array[j] = collection[q + j + 1]
+    left_array[n1] = sys.maxsize
+    right_array[n2] = sys.maxsize
     i = 0
     j = 0
     for k in range(p, r + 1):
-        if L[i] <= R[j]:
-            collection[k] = L[i]
+        if left_array[i] <= right_array[j]:
+            collection[k] = left_array[i]
             i = i + 1
         else:
-            collection[k] = R[j]
+            collection[k] = right_array[j]
             j = j + 1
 
 
-def merge_sort(collection, p, r):
+def merge_sort(collection, p=None, r=None):
+    """
+    Merge sort
+    :param collection: The collection to sort.
+    :param p: The starting index.
+    :param r: The ending index.
+    """
+    if p == None and r == None:
+        p = 0
+        r = len(collection) - 1
+
     if p < r:
         q = math.floor((p + r) / 2)
         merge_sort(collection, p, q)
@@ -54,5 +71,5 @@ if __name__ == "__main__":
     assert collection == [1, 2, 3, 4, 5, 6]
 
     collection = [5, 2, 4, 7, 1, 3, 2, 6]
-    merge_sort(collection, 0, 7)
+    merge_sort(collection)
     assert collection == [1, 2, 2, 3, 4, 5, 6, 7]
