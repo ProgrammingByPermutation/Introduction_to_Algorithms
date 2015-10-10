@@ -11,9 +11,19 @@ class OneBasedList:
             self.list = []
 
     def __getitem__(self, item):
+        if item < 1:
+            raise Exception("Index out of range: " + item)
+        elif item > len(self.list):
+            raise Exception("Index out of range: " + item)
+
         return self.list[item - 1]
 
     def __setitem__(self, key, value):
+        if key < 1:
+            raise Exception("Index out of range: " + item)
+        elif key > len(self.list):
+            raise Exception("Index out of range: " + item)
+
         self.list[key - 1] = value
 
     def __str__(self):
