@@ -220,8 +220,9 @@ class Heap():
     def heap_height(self):
         """
         Chapter 6: The heap size is the number of vertices between the root node and the farthest leaf.
+        In general the height of a heap is the floor of the log2(total nodes)
         """
-        return self.height(1)
+        return math.floor(math.log(len(self.list), 2))
 
 
 class MaxHeap(Heap):
@@ -230,6 +231,10 @@ class MaxHeap(Heap):
     The parent node's value is larger than or equal to the child node's value.
     The heap uses a one based index.
     """
+
+    def __init__(self, collection):
+        Heap.__init__(self, collection)
+        self.build_max_heap()
 
     def build_max_heap(self):
         """
@@ -258,6 +263,46 @@ class MaxHeap(Heap):
         if largest != i:
             self[i], self[largest] = self[largest], self[i]
             self.max_heapify(largest)
+
+
+class MinHeap(Heap):
+    """
+    Chapter 6: A min heap is a binary tree where each node satisfies the condition:
+    The parent node's value is less than or equal to the child node's value.
+    The heap uses a one based index.
+    """
+
+    def __init__(self, collection):
+        Heap.__init__(self, collection)
+        self.build_min_heap()
+
+    def build_min_heap(self):
+        """
+        Chapter 6: Builds a min heap out of the current collection.
+        """
+        for i in range(math.floor(len(self) / 2), 0, -1):
+            self.min_heapify(i)
+
+    def min_heapify(self, i):
+        """
+        Chapter 6: Manipulates the existing heap, in place, in order to satisfy the min heap condition.
+        When called it is assumed that the binary tree nodes at right(i) and left(i) are already
+        satisfying the min heap property but that index i may not.
+        :param i: The index that is out of place in the heap.
+        """
+        l = self.left(i)
+        r = self.right(i)
+        if l <= self.heap_size() and self[l].value < self[i].value:
+            smallest = l
+        else:
+            smallest = i
+
+        if r <= self.heap_size() and self[r].value < self[smallest].value:
+            smallest = r
+
+        if smallest != i:
+            self[i], self[smallest] = self[smallest], self[i]
+            self.min_heapify(smallest)
 
 
 if __name__ == "__main__":
