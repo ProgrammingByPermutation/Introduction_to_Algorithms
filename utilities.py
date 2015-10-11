@@ -107,7 +107,7 @@ def randomize_in_place(collection):
 if __name__ == "__main__":
     def assert_notequal_contains(source, value, printValue=False):
         """
-        Determines if the source contains of the values of value but without being in the same order.
+        Determines if the source contains the values but without being in the same order.
         :param source: The source to check.
         :param value: The value to check against.
         :param printValue: True if should print to the console, false otherwise.
