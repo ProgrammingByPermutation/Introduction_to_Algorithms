@@ -1,3 +1,6 @@
+import random
+
+
 class OneBasedList:
     """
     A list that uses a one-based index. This is how the book's arrays work. Useful for debugging when converting to a
@@ -28,3 +31,113 @@ class OneBasedList:
 
     def __str__(self):
         return str(self.list)
+
+
+def permute_by_sorting(collection):
+    """
+    Chapter 5: Randomly sorts the collection using a secondary list of random numbers for each index that is subsequently
+    sorted.
+    :param collection: The collection to randomly sort.
+    :return: The randomly sorted collection.
+    """
+    n = len(collection)
+    P = [[None, None]] * n
+
+    # For each index, generate a random number.
+    for i in range(n):
+        P[i] = (random.uniform(0, n ** 3), collection[i])
+
+    # Sort based on the random number in each position
+    P = sorted(P, key=lambda tup: tup[0])
+
+    # Return the randomly sorted collection
+    return [item[1] for item in P]
+
+
+def permute_without_identity(collection):
+    """
+    Chapter 5: Produces any permutation except the identity permutation in place.
+    :param collection: The collection to permute in place.
+    """
+    n = len(collection)
+    for i in range(n - 2):
+        rnd = random.randint(i + 1, n - 1)
+        collection[i], collection[rnd] = collection[rnd], collection[i]
+
+
+def permute_with_all(collection):
+    """
+    Chapter 5: Produces a permutation using all values at all times.
+    :param collection: The collection to permute in place.
+    """
+    n = len(collection)
+    for i in range(n):
+        rnd = random.randint(0, n - 1)
+        collection[i], collection[rnd] = collection[rnd], collection[i]
+
+
+def permute_by_cyclic(collection):
+    """
+    Chapter 5: Shifts the contents of the collection by a random index.
+    :param collection: The collection to permute.
+    :return: A new permuted collection.
+    """
+    n = len(collection)
+    B = [None] * n
+    offset = random.randint(0, n - 1)
+    for i in range(n):
+        dest = i + offset
+        if dest >= n:
+            dest = dest - n
+        B[dest] = collection[i]
+    return B
+
+
+def randomize_in_place(collection):
+    """
+    Chapter 5: Randomizes the collection in place.
+    :param collection: The collection to randomize in place.
+    """
+    n = len(collection)
+    for i in range(n):
+        rnd = random.randint(i, n - 1)
+        collection[i], collection[rnd] = collection[rnd], collection[i]
+
+
+if __name__ == "__main__":
+    def assert_notequal_contains(source, value, printValue=False):
+        """
+        Determines if the source contains of the values of value but without being in the same order.
+        :param source: The source to check.
+        :param value: The value to check against.
+        :param printValue: True if should print to the console, false otherwise.
+        """
+        if printValue:
+            print(source)
+        assert (source != value)
+        for x in value:
+            assert (x in source)
+
+
+    # Technically this could happen...so if it flags we'll just ignore it.
+    assert_notequal_contains(permute_by_sorting([1, 2, 3, 4, 5, 6]), [1, 2, 3, 4, 5, 6])
+
+    # Technically this could happen...so if it flags we'll just ignore it.
+    collection = [1, 2, 3, 4, 5, 6]
+    randomize_in_place(collection)
+    assert_notequal_contains(collection, [1, 2, 3, 4, 5, 6])
+
+    # Technically this could happen...so if it flags we'll just ignore it.
+    collection = [1, 2, 3, 4, 5, 6]
+    permute_without_identity(collection)
+    assert_notequal_contains(collection, [1, 2, 3, 4, 5, 6])
+
+    # Technically this could happen...so if it flags we'll just ignore it.
+    collection = [1, 2, 3, 4, 5, 6]
+    permute_with_all(collection)
+    assert_notequal_contains(collection, [1, 2, 3, 4, 5, 6])
+
+    # Technically this could happen...so if it flags we'll just ignore it.
+    collection = [1, 2, 3, 4, 5, 6]
+    collection = permute_by_cyclic(collection)
+    assert_notequal_contains(collection, [1, 2, 3, 4, 5, 6])
