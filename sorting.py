@@ -86,18 +86,21 @@ class Heap():
     """
 
     class HeapNode:
-        def __init__(self, heap, index, value):
+        def __init__(self, heap, index, value, handle=None):
             """
             Initializes a new instance of the HeapNode class.
             :param index: The index of the node in the flattened heap represented as an array with a one based index.
-            :param value: The value of the node.
+            :param value: The value of the node to use as a weight in the heap tree.
+            :param handle: The object associated with the node.
             """
             self.heap = heap
             self.index = index
             self.value = value
+            self.handle = handle
 
         def __str__(self):
-            return str(self.index) + ": " + str(self.value)
+            return "<Heap.HeapNode> Index: " + str(self.index) + " Value: " + str(self.value) + " Handle: " + str(
+                self.handle)
 
         def left(self):
             """
@@ -133,11 +136,22 @@ class Heap():
                 return None
 
     def __init__(self, collection):
+        """
+        Initializes a new instance of the Heap class.
+        :param collection: The collection to base the heap off of. If an entry is multi-dimensional index 0
+                           will be used as the value (weight) of the node and index 1 will be used as the handle.
+                           Otherwise, if the entry is able to be indexed it will only be used as a value.
+        """
         self.list = []
 
         if collection is not None:
             for i in range(len(collection)):
-                self.list.append(Heap.HeapNode(self, i + 1, collection[i]))
+                try:
+                    self.list.append(Heap.HeapNode(self, i + 1, collection[i][0], collection[i][1]))
+                except:
+                    self.list.append(Heap.HeapNode(self, i + 1, collection[i]))
+
+        self.heap_size = len(collection)
 
     def __getitem__(self, index):
         """
@@ -211,12 +225,6 @@ class Heap():
 
         return vertices
 
-    def heap_size(self):
-        """
-        Chapter 6: The heap size is the number of nodes in the heap.
-        """
-        return len(self.list)
-
     def heap_height(self):
         """
         Chapter 6: The heap size is the number of vertices between the root node and the farthest leaf.
@@ -233,6 +241,12 @@ class MaxHeap(Heap):
     """
 
     def __init__(self, collection):
+        """
+        Initializes a new instance of the Heap class.
+        :param collection: The collection to base the heap off of. If an entry is multi-dimensional index 0
+                           will be used as the value (weight) of the node and index 1 will be used as the handle.
+                           Otherwise, if the entry is able to be indexed it will only be used as a value.
+        """
         Heap.__init__(self, collection)
         self.build_max_heap()
 
@@ -240,6 +254,7 @@ class MaxHeap(Heap):
         """
         Chapter 6: Builds a max heap out of the current collection.
         """
+        self.heap_size = len(self)
         for i in range(math.floor(len(self) / 2), 0, -1):
             self.max_heapify(i)
 
@@ -252,17 +267,114 @@ class MaxHeap(Heap):
         """
         l = self.left(i)
         r = self.right(i)
-        if l <= self.heap_size() and self[l].value > self[i].value:
+        if l <= self.heap_size and self[l].value > self[i].value:
             largest = l
         else:
             largest = i
 
-        if r <= self.heap_size() and self[r].value > self[largest].value:
+        if r <= self.heap_size and self[r].value > self[largest].value:
             largest = r
 
         if largest != i:
             self[i], self[largest] = self[largest], self[i]
             self.max_heapify(largest)
+
+    def heap_sort(self):
+        """
+        Chapter 6: Sorts the heap in ascending order in place.
+        """
+        # Called as a precaution to ensure that it is already true, as long as nothing was added it should be.
+        self.build_max_heap()
+
+        # Loop through and exchange the root (which should always be the largest thing), with the right most leaf
+        for i in range(len(self), 2 - 1, -1):
+            self[1], self[i] = self[i], self[1]
+
+            # We removed a node from the heap
+            self.heap_size -= 1
+
+            # Re-heapify the root, it likely will no longer the largest thing in the list and we need it to be.
+            self.max_heapify(1)
+
+    def heap_maximum(self):
+        """
+        Chapter 6: Retrieves the maximum of the heap. Always the root node.
+        :return: The largest node of the heap.
+        """
+        return self[1]
+
+    def heap_extract_max(self):
+        """
+        Chapter 6: Removes the largest node from the heap.
+        :return: The largest node.
+        """
+        if self.heap_size < 1:
+            raise Exception("Attempt to extract node without any nodes in heap.")
+
+        # The root is always the max
+        max = self[1]
+
+        # Set the new root
+        self[1] = self[self.heap_size]
+
+        # Correct the new size
+        self.heap_size -= 1
+
+        # Re-stabilize the heap
+        self.max_heapify(1)
+        return max
+
+    def heap_increase_key(self, i, key):
+        """
+        Chapter 6: Increases the key (value) of the node to the passed in key (value).
+        :param i: The index to modify.
+        :param key: The new value.
+        """
+        # None is a placeholder value for the smallest possible number.
+        if self[i].value is not None and key < self[i].value:
+            raise AttributeError("The passed in key was less than the current value.")
+
+        # Set the new value
+        self[i].value = key
+
+        # Search upwards for the correct placement of the current node. If the node is None represents the
+        # smallest possible number.
+        while i > 1 and (self[self.parent(i)].value is None or self[self.parent(i)].value < self[i].value):
+            self[i], self[self.parent(i)] = self[self.parent(i)], self[i]
+            i = self.parent(i)
+
+    def max_heap_insert(self, key):
+        """
+        Chapter 6: Creates a new node with the given value.
+        :param key: The value to add to the heap. If the value is multidimensional index 0 will be the value
+                    and index 1 will be the handle.
+        """
+        # Gather inputs
+        handle = None
+        try:
+            value, handle = key[0], key[1]
+        except:
+            value = key
+
+        # Increase the heap's size by one
+        self.heap_size += 1
+
+        # If the heap size is larger than the array, we need to increase the size of the array.
+        if self.heap_size > len(self.list):
+            # If the heap size is larger than the array by more than 1 something has gone wrong and we need to stop.
+            if self.heap_size != len(self.list) + 1:
+                raise Exception("Internal error, heap size is incorrect.")
+
+            # Add to the end of the list with an invalid value, this will ensure that is the counted as one of the
+            # lowest possible values in the heap
+            self.list.append(Heap.HeapNode(self, self.heap_size, None, handle))
+        else:
+            # Add to the end of the list with an invalid value, this will ensure that is the counted as one of the
+            # lowest possible values in the heap
+            self.list[self.heap_size] = Heap.HeapNode(self, self.heap_size, None, handle)
+
+        # Now change the value
+        self.heap_increase_key(self.heap_size, value)
 
 
 class MinHeap(Heap):
@@ -273,6 +385,12 @@ class MinHeap(Heap):
     """
 
     def __init__(self, collection):
+        """
+        Initializes a new instance of the Heap class.
+        :param collection: The collection to base the heap off of. If an entry is multi-dimensional index 0
+                           will be used as the value (weight) of the node and index 1 will be used as the handle.
+                           Otherwise, if the entry is able to be indexed it will only be used as a value.
+        """
         Heap.__init__(self, collection)
         self.build_min_heap()
 
@@ -280,6 +398,7 @@ class MinHeap(Heap):
         """
         Chapter 6: Builds a min heap out of the current collection.
         """
+        self.heap_size = len(self)
         for i in range(math.floor(len(self) / 2), 0, -1):
             self.min_heapify(i)
 
@@ -292,23 +411,120 @@ class MinHeap(Heap):
         """
         l = self.left(i)
         r = self.right(i)
-        if l <= self.heap_size() and self[l].value < self[i].value:
+        if l <= self.heap_size and self[l].value < self[i].value:
             smallest = l
         else:
             smallest = i
 
-        if r <= self.heap_size() and self[r].value < self[smallest].value:
+        if r <= self.heap_size and self[r].value < self[smallest].value:
             smallest = r
 
         if smallest != i:
             self[i], self[smallest] = self[smallest], self[i]
             self.min_heapify(smallest)
 
+    def heap_sort(self):
+        """
+        Chapter 6: Sorts the heap in descending order in place.
+        """
+        # Called as a precaution to ensure that it is already true, as long as nothing was added it should be.
+        self.build_min_heap()
+
+        # Loop through and exchange the root (which should always be the largest thing), with the right most leaf
+        for i in range(len(self), 2 - 1, -1):
+            self[1], self[i] = self[i], self[1]
+
+            # We removed a node from the heap
+            self.heap_size -= 1
+
+            # Re-heapify the root, it likely will no longer the largest thing in the list and we need it to be.
+            self.min_heapify(1)
+
+    def heap_minimum(self):
+        """
+        Chapter 6: Retrieves the minimum of the heap. Always the root node.
+        :return: The smallest node of the heap.
+        """
+        return self[1]
+
+    def heap_extract_min(self):
+        """
+        Chapter 6: Removes the smallest node from the heap.
+        :return: The smallest node.
+        """
+        if self.heap_size < 1:
+            raise Exception("Attempt to extract node without any nodes in heap.")
+
+        # The root is always the max
+        min = self[1]
+
+        # Set the new root
+        self[1] = self[self.heap_size]
+
+        # Correct the new size
+        self.heap_size -= 1
+
+        # Re-stabilize the heap
+        self.min_heapify(1)
+        return min
+
+    def heap_decrease_key(self, i, key):
+        """
+        Chapter 6: Decreases the key (value) of the node to the passed in key (value).
+        :param i: The index to modify.
+        :param key: The new value.
+        """
+        # None is a placeholder value for the largest possible number.
+        if self[i].value is not None and key > self[i].value:
+            raise AttributeError("The passed in key was greater than the current value.")
+
+        # Set the new value
+        self[i].value = key
+
+        # Search upwards for the correct placement of the current node. If the node is None represents the
+        # largest possible number.
+        while i > 1 and (self[self.parent(i)].value is None or self[self.parent(i)].value > self[i].value):
+            self[i], self[self.parent(i)] = self[self.parent(i)], self[i]
+            i = self.parent(i)
+
+    def min_heap_insert(self, key):
+        """
+        Chapter 6: Creates a new node with the given value.
+        :param key: The value to add to the heap. If the value is multidimensional index 0 will be the value
+                    and index 1 will be the handle.
+        """
+        # Gather inputs
+        handle = None
+        try:
+            value, handle = key[0], key[1]
+        except:
+            value = key
+
+        # Increase the heap's size by one
+        self.heap_size += 1
+
+        # If the heap size is larger than the array, we need to increase the size of the array.
+        if self.heap_size > len(self.list):
+            # If the heap size is larger than the array by more than 1 something has gone wrong and we need to stop.
+            if self.heap_size != len(self.list) + 1:
+                raise Exception("Internal error, heap size is incorrect.")
+
+            # Add to the end of the list with an invalid value, this will ensure that is the counted as one of the
+            # lowest possible values in the heap
+            self.list.append(Heap.HeapNode(self, self.heap_size, None, handle))
+        else:
+            # Add to the end of the list with an invalid value, this will ensure that is the counted as one of the
+            # lowest possible values in the heap
+            self.list[self.heap_size] = Heap.HeapNode(self, self.heap_size, None, handle)
+
+        # Now change the value
+        self.heap_decrease_key(self.heap_size, value)
+
 
 if __name__ == "__main__":
-    heap = MaxHeap([4, 1, 3, 2, 16, 9, 10, 14, 8, 7])
+    heap = MaxHeap([[4, 4], 1, 3, 2, 16, 9, 10, 14, 8, 7])
     print("Before:")
     [print(x) for x in heap.list]
-    heap.build_max_heap()
+    heap.max_heap_insert(999)
     print("\r\nAfter:")
     [print(x) for x in heap.list]

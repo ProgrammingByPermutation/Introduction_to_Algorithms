@@ -21,43 +21,68 @@ class TestMiscSort(TestCase):
 
 
 class TestMaxHeap(TestCase):
-    def test_build_max_heap(self):
+    def heap_integrity_check(self, heap):
+        for i in range(1, len(heap) + 1):
+            node = heap[i]
+
+            self.assertEquals(node.index, i, "Heap node index value doesn't match enumerated index.")
+
+            child = node.left()
+            if child is not None:
+                self.assertGreaterEqual(node.value, child.value,
+                                        "Failed integrity test for min heap, all parents must be >= children.")
+
+            child = node.right()
+            if child is not None:
+                self.assertGreaterEqual(node.value, child.value,
+                                        "Failed integrity test for min heap, all parents must be >= children.")
+
+    def test_max_heap_sort(self):
         heap_to_test = MaxHeap([4, 1, 3, 2, 16, 9, 10, 14, 8, 7])
         heap_accepted_answer = MaxHeap([16, 14, 10, 8, 7, 9, 3, 2, 4, 1])
 
+        # Check that the sizes match
         self.assertEquals(len(heap_to_test), len(heap_accepted_answer), "Heap size doesn't match expected.")
+
+        # Check that the heaps are in the correct integrity
+        self.heap_integrity_check(heap_to_test)
+        self.heap_integrity_check(heap_accepted_answer)
+
+        # Check that they match
         for i in range(1, len(heap_to_test) + 1):
             test = heap_to_test[i]
             accepted = heap_accepted_answer[i]
 
-            self.assertEquals(test.index, i, "Heap node index value doesn't match enumerated index.")
-            self.assertEquals(accepted.index, i, "Heap node index value doesn't match enumerated index.")
             self.assertEquals(test.index, accepted.index, "Heap node index doesn't match expected value.")
             self.assertEquals(test.value, accepted.value, "Heap node value doesn't match expected value.")
 
-            child = test.left()
-            if child is not None:
-                self.assertGreaterEqual(test.value, child.value,
-                                        "Failed integrity test for min heap, all parents must be >= children.")
+        # Perform the sort and ensure they are sorted
+        heap_to_test.heap_sort()
+        for i in range(1, len(heap_to_test)):
+            self.assertLessEqual(heap_to_test[i].value, heap_to_test[i + 1].value,
+                                 "Heap not sorted in ascending order.")
 
-            child = test.right()
-            if child is not None:
-                self.assertGreaterEqual(test.value, child.value,
-                                        "Failed integrity test for min heap, all parents must be >= children.")
+    def test_max_heap_increase(self):
+        test_heap = MaxHeap([16, 14, 10, 8, 7, 9, 3, 2, 4, 1])
 
-    def test_max_heapify(self):
-        # Testing test_build_max_heap tests this.
-        self.test_build_max_heap()
+        # Exchange the 4 for a 999 and ensure the heap is still valid
+        test_heap.heap_increase_key(9, 999)
+        self.heap_integrity_check(test_heap)
+
+    def test_max_heap_insert(self):
+        test_heap = MaxHeap([16, 14, 10, 8, 7, 9, 3, 2, 4, 1])
+
+        # Exchange the 4 for a 999 and ensure the heap is still valid
+        test_heap.max_heap_insert(999)
+        self.heap_integrity_check(test_heap)
 
 
 class TestMinHeap(TestCase):
-    def test_build_min_heap(self):
-        heap_to_test = MinHeap([4, 1, 3, 2, 16, 9, 10, 14, 8, 7])
+    def heap_integrity_check(self, heap):
+        for i in range(1, len(heap) + 1):
+            node = heap[i]
 
-        self.assertEquals(len(heap_to_test), 10, "Heap size doesn't match expected.")
-
-        for i in range(1, len(heap_to_test) + 1):
-            node = heap_to_test[i]
+            self.assertEquals(node.index, i, "Heap node index value doesn't match enumerated index.")
 
             child = node.left()
             if child is not None:
@@ -69,17 +94,43 @@ class TestMinHeap(TestCase):
                 self.assertLessEqual(node.value, child.value,
                                      "Failed integrity test for min heap, all parents must be <= children.")
 
-            self.assertEquals(node.index, i, "Heap node index value doesn't match enumerated index.")
+    def test_min_heap_sort(self):
+        heap_to_test = MinHeap([4, 1, 3, 2, 16, 9, 10, 14, 8, 7])
 
-    def test_min_heapify(self):
-        # Testing test_build_max_heap tests this.
-        self.test_build_min_heap()
+        # Verify length
+        self.assertEquals(len(heap_to_test), 10, "Heap size doesn't match expected.")
+
+        # Verify business rules for a min heap are intact
+        self.heap_integrity_check(heap_to_test)
+
+        # Verify sorting
+        heap_to_test.heap_sort()
+        for i in range(1, len(heap_to_test)):
+            self.assertGreaterEqual(heap_to_test[i].value, heap_to_test[i + 1].value,
+                                    "Heap not sorted in descending order.")
+
+    def test_max_heap_increase(self):
+        test_heap = MinHeap([16, 14, 10, 8, 7, 9, 3, 2, 4, 1])
+
+        # Exchange the 4 for a 999 and ensure the heap is still valid
+        test_heap.heap_decrease_key(9, 5)
+        self.heap_integrity_check(test_heap)
+
+    def test_max_heap_insert(self):
+        test_heap = MinHeap([16, 14, 10, 8, 7, 9, 3, 2, 4, 1])
+
+        # Exchange the 4 for a 999 and ensure the heap is still valid
+        test_heap.min_heap_insert(999)
+        self.heap_integrity_check(test_heap)
+
+        for i in range(1, len(test_heap) + 1):
+            print(test_heap[i])
 
 
 class TestHeap(TestCase):
     def test_length(self):
         heap = Heap(range(10))
-        self.assertEquals(heap.heap_size(), 10)
+        self.assertEquals(heap.heap_size, 10)
         self.assertEquals(len(heap), 10)
 
     def test_height(self):
