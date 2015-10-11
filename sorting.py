@@ -79,6 +79,44 @@ def bubble_sort(collection):
                 collection[j], collection[j - 1] = collection[j - 1], collection[j]
 
 
+def quick_sort(collection, p=None, r=None):
+    """
+    Chapter 7: Quick sorts a collection in place.
+    :param collection: The collection to sort.
+    :param p: The lower bounds of the sort.
+    :param r: The upper bounds of the sort.
+    """
+
+    def partition(collection, p, r):
+        """
+        Chapter 7: Rearranges the sub array in place
+        :param collection: The collection to sort.
+        :param p: The lower bounds of the sort.
+        :param r: The upper bounds of the sort.
+        """
+        x = collection[r]
+        i = p - 1
+        for j in range(p, r):
+            if collection[j] <= x:
+                i += 1
+                collection[i], collection[j] = collection[j], collection[i]
+        collection[i + 1], collection[r] = collection[r], collection[i + 1]
+        return i + 1
+
+    # Check the parameters
+    if p is None:
+        p = 0
+
+    if r is None:
+        r = len(collection) - 1
+
+    # Perform the sort
+    if p < r:
+        q = partition(collection, p, r)
+        quick_sort(collection, p, q - 1)
+        quick_sort(collection, q + 1, r)
+
+
 class Heap():
     """
     Chapter 6: The base of a binary tree which can be sub-classed to either be a max or a min heap.
@@ -522,9 +560,6 @@ class MinHeap(Heap):
 
 
 if __name__ == "__main__":
-    heap = MaxHeap([[4, 4], 1, 3, 2, 16, 9, 10, 14, 8, 7])
-    print("Before:")
-    [print(x) for x in heap.list]
-    heap.max_heap_insert(999)
-    print("\r\nAfter:")
-    [print(x) for x in heap.list]
+    a = [2, 8, 7, 1, 3, 5, 6, 4, 15, 13, 99, 82, 64, 81]
+    quick_sort(a, 0, len(a) - 1)
+    print(a)

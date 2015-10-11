@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from sorting import MaxHeap, insertion_sort, merge_sort, bubble_sort, MinHeap, Heap
+from sorting import *
 
 
 class TestMiscSort(TestCase):
@@ -18,6 +18,13 @@ class TestMiscSort(TestCase):
         collection = [5, 2, 4, 7, 1, 3, 2, 6]
         bubble_sort(collection)
         self.assertEquals(collection, [1, 2, 2, 3, 4, 5, 6, 7], "Collection not sorted.")
+
+    def test_quick_sort(self):
+        a = [2, 8, 7, 1, 3, 5, 6, 4, 15, 13, 99, 82, 64, 81]
+        quick_sort(a, 0, len(a) - 1)
+
+        for i in range(len(a) - 1):
+            self.assertLessEqual(a[i], a[i + 1], "Collection not sorted.")
 
 
 class TestMaxHeap(TestCase):
@@ -122,9 +129,6 @@ class TestMinHeap(TestCase):
         # Exchange the 4 for a 999 and ensure the heap is still valid
         test_heap.min_heap_insert(999)
         self.heap_integrity_check(test_heap)
-
-        for i in range(1, len(test_heap) + 1):
-            print(test_heap[i])
 
 
 class TestHeap(TestCase):

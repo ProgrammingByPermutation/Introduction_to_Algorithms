@@ -1,7 +1,6 @@
 from unittest import TestCase
 
-from utilities import OneBasedList, permute_by_sorting, randomize_in_place, permute_without_identity, permute_with_all, \
-    permute_by_cyclic
+from utilities import *
 
 
 class TestOneBasedList(TestCase):
