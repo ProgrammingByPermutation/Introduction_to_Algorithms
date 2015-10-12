@@ -2,6 +2,11 @@ import math
 import random
 
 
+# region Comparison Sorts
+# Comparison sorts are categorized by the assumption that the sorted order they determine is based only on
+# comparisons between the input elements.
+
+
 def insertion_sort(collection):
     """
     Chapter 2: Sorts the provided collection using an insertion sort.
@@ -58,10 +63,14 @@ def merge_sort(collection, p=None, r=None):
                 collection[k] = right_array[j]
                 j = j + 1
 
-    if p == None and r == None:
+    # Check the inputs
+    if p == None:
         p = 0
+
+    if r == None:
         r = len(collection) - 1
 
+    # Perform the search
     if p < r:
         q = math.floor((p + r) / 2)
         merge_sort(collection, p, q)
@@ -80,13 +89,21 @@ def bubble_sort(collection):
                 collection[j], collection[j - 1] = collection[j - 1], collection[j]
 
 
-def stooge_sort(collection, i, j):
+def stooge_sort(collection, i=None, j=None):
     """
     Chapter 7: Sorting algorithm proposed by Professors Howard, Fine, and Howard...
     :param collection: The collection to sort in place.
     :param i: The lower bound.
     :param j: The upper bound.
     """
+
+    # Check the inputs
+    if i == None:
+        i = 0
+
+    if j == None:
+        j = len(collection) - 1
+
     if collection[i] > collection[j]:
         collection[i], collection[j] = collection[j], collection[i]
 
@@ -671,6 +688,9 @@ class MinHeap(Heap):
 
         # Now change the value
         self.heap_decrease_key(self.heap_size, value)
+
+
+# endregion
 
 
 # endregion
