@@ -83,6 +83,14 @@ class TestMiscSort(TestCase):
         for i in range(len(a) - 1):
             self.assertLessEqual(a[i], a[i + 1], "Collection not sorted. " + str(a))
 
+    def test_counting_sort(self):
+        a = [2, 5, 3, 0, 2, 3, 0, 3]
+        B = [None] * len(a)
+        counting_sort(a, B)
+
+        for i in range(len(B) - 1):
+            self.assertLessEqual(B[i], B[i + 1], "Collection not sorted. " + str(B))
+
 
 class TestMaxHeap(TestCase):
     def heap_integrity_check(self, heap):
