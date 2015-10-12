@@ -754,7 +754,9 @@ def counting_sort(collection, B, k=None):
     and max values are.
     :param collection: The collection to sort.
     :param B: The sorted collection.
-    :param k: The largest value in the collection.
+    :param k: The largest value in the collection. If you do not know the largest value of the collection at compile
+              time and leave this value None it will be looked up for you. This adds an extra (n) to big O of the
+              running time as each element will need to be visited to determine the maximum value.
     """
     if len(collection) != len(B):
         raise Exception("collection and B must be the same size.")
