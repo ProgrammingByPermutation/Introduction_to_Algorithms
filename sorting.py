@@ -1,9 +1,10 @@
 import math
+import random
 
 
 def insertion_sort(collection):
     """
-    Chapter 2: Sorts the provided collection using an insertion sort. Runtime: n^2
+    Chapter 2: Sorts the provided collection using an insertion sort.
     :param collection: A collection that can be indexed. Will be modified in place.
     """
     for j in range(1, len(collection)):
@@ -19,7 +20,7 @@ def insertion_sort(collection):
 
 def merge_sort(collection, p=None, r=None):
     """
-    Chapter 2: Merge sort. Runtime: n log n.
+    Chapter 2: Merge sort.
     :param collection: The collection to sort.
     :param p: The starting index.
     :param r: The ending index.
@@ -70,7 +71,7 @@ def merge_sort(collection, p=None, r=None):
 
 def bubble_sort(collection):
     """
-    Chapter 2: Bubble Sort. Runtime: Laughable
+    Chapter 2: Bubble Sort.
     :param collection: The collection to sort in place.
     """
     for i in range(len(collection)):
@@ -79,36 +80,102 @@ def bubble_sort(collection):
                 collection[j], collection[j - 1] = collection[j - 1], collection[j]
 
 
-def quick_sort(collection, p=None, r=None):
+def stooge_sort(collection, i, j):
+    """
+    Chapter 7: Sorting algorithm proposed by Professors Howard, Fine, and Howard...
+    :param collection: The collection to sort in place.
+    :param i: The lower bound.
+    :param j: The upper bound.
+    """
+    if collection[i] > collection[j]:
+        collection[i], collection[j] = collection[j], collection[i]
+
+    if i + 1 >= j:
+        return
+
+    k = math.floor((j - i + 1) / 3)
+
+    # First two-thirds
+    stooge_sort(collection, i, j - k)
+
+    # Last two-thirds
+    stooge_sort(collection, i + k, j)
+
+    # First two-thirds again
+    stooge_sort(collection, i, j - k)
+
+
+# region Quick Sort
+
+
+def partition(collection, p, r):
+    """
+    Chapter 7: Rearranges the sub array in place
+    :param collection: The collection to sort.
+    :param p: The lower bounds of the sort.
+    :param r: The upper bounds of the sort.
+    """
+    # Define the pivot point
+    pivot = collection[r]
+
+    # Sort the array given the following criteria
+    # 1. If p <= k <= i, then collection[k] <= pivot
+    # 2. If i + 1 <= k <= j - 1, then collection[k] > pivot
+    # 3. If k = r, then collection[k] = pivot
+    i = p - 1
+    for j in range(p, r):
+        if collection[j] <= pivot:
+            i += 1
+            collection[i], collection[j] = collection[j], collection[i]
+    collection[i + 1], collection[r] = collection[r], collection[i + 1]
+    return i + 1
+
+
+def randomized_partition(collection, p, r):
+    """
+    Chapter 7: Rearranges the sub array in place using a randomized pivot point.
+    :param collection: The collection to sort.
+    :param p: The lower bounds of the sort.
+    :param r: The upper bounds of the sort.
+    """
+    i = random.randint(p, r)
+    collection[r], collection[i] = collection[i], collection[r]
+    return partition(collection, p, r)
+
+
+def hoare_partition(collection, p, r):
+    """
+    Chapter 7: Rearranges the sub array in place. Original partition implementation by C. A. R. Hoare.
+    :param collection: The collection to sort.
+    :param p: The lower bounds of the sort.
+    :param r: The upper bounds of the sort.
+    """
+    x = collection[p]
+    i = p - 1
+    j = r + 1
+    while True:
+        while True:
+            j -= 1
+            if collection[j] <= x:
+                break
+        while True:
+            i += 1
+            if collection[i] >= x:
+                break
+        if i < j:
+            collection[i], collection[j] = collection[j], collection[i]
+        else:
+            return j
+
+
+def quicksort(collection, p=None, r=None, partition=partition):
     """
     Chapter 7: Quick sorts a collection in place.
     :param collection: The collection to sort.
     :param p: The lower bounds of the sort.
     :param r: The upper bounds of the sort.
+    :param partition: The partition method to use.
     """
-
-    def partition(collection, p, r):
-        """
-        Chapter 7: Rearranges the sub array in place
-        :param collection: The collection to sort.
-        :param p: The lower bounds of the sort.
-        :param r: The upper bounds of the sort.
-        """
-        # Define the pivot point
-        pivot = collection[r]
-
-        # Sort the array given the following criteria
-        # 1. If p <= k <= i, then collection[k] <= pivot
-        # 2. If i + 1 <= k <= j - 1, then collection[k] > pivot
-        # 3. If k = r, then collection[k] = pivot
-        i = p - 1
-        for j in range(p, r):
-            if collection[j] <= pivot:
-                i += 1
-                collection[i], collection[j] = collection[j], collection[i]
-        collection[i + 1], collection[r] = collection[r], collection[i + 1]
-        return i + 1
-
     # Check the parameters
     if p is None:
         p = 0
@@ -119,8 +186,49 @@ def quick_sort(collection, p=None, r=None):
     # Perform the sort
     if p < r:
         q = partition(collection, p, r)
-        quick_sort(collection, p, q - 1)
-        quick_sort(collection, q + 1, r)
+        quicksort(collection, p, q - 1)
+        quicksort(collection, q + 1, r)
+
+
+def randomize_quicksort(collection, p=None, r=None, partition=randomized_partition):
+    """
+    Chapter 7: Quick sorts a collection in place using a randomized pivot point.
+    :param collection: The collection to sort.
+    :param p: The lower bounds of the sort.
+    :param r: The upper bounds of the sort.
+    :param partition: The partition method to use.
+    """
+    quicksort(collection, p, r, partition)
+
+
+def quicksort_tailrecursion(collection, p=None, r=None, partition=partition):
+    """
+    Chapter 7: Quick sorts a collection in place. Algorithm uses tail recursion to avoid second recursive call.
+    NOTE: This method doesn't work in Python as the language's compiler doesn't support tail recursion. It is
+          included for the purposes of completeness.
+    :param collection: The collection to sort.
+    :param p: The lower bounds of the sort.
+    :param r: The upper bounds of the sort.
+    :param partition: The partition method to use.
+    """
+    # Check the parameters
+    if p is None:
+        p = 0
+
+    if r is None:
+        r = len(collection) - 1
+
+    # Perform the sort
+    while p < r:
+        q = partition(collection, p, r)
+        quicksort_tailrecursion(collection, p, q - 1)
+        p = q + 1
+
+
+# endregion
+
+
+# region Heap Sort
 
 
 class Heap():
@@ -565,7 +673,10 @@ class MinHeap(Heap):
         self.heap_decrease_key(self.heap_size, value)
 
 
+# endregion
+
+
 if __name__ == "__main__":
     a = [2, 8, 7, 1, 3, 5, 6, 4, 15, 13, 99, 82, 64, 81]
-    quick_sort(a, 0, len(a) - 1)
+    quicksort(a, 0, len(a) - 1)
     print(a)

@@ -21,7 +21,45 @@ class TestMiscSort(TestCase):
 
     def test_quick_sort(self):
         a = [2, 8, 7, 1, 3, 5, 6, 4, 15, 13, 99, 82, 64, 81]
-        quick_sort(a, 0, len(a) - 1)
+        quicksort(a, 0, len(a) - 1)
+
+        for i in range(len(a) - 1):
+            self.assertLessEqual(a[i], a[i + 1], "Collection not sorted.")
+
+        a = [2, 8, 7, 1, 3, 5, 6, 4, 15, 13, 99, 82, 64, 81]
+        quicksort(a, 0, len(a) - 1, partition=randomized_partition)
+
+        for i in range(len(a) - 1):
+            self.assertLessEqual(a[i], a[i + 1], "Collection not sorted.")
+
+        a = [2, 8, 7, 1, 3, 5, 6, 4, 15, 13, 99, 82, 64, 81]
+        quicksort(a, 0, len(a) - 1, partition=hoare_partition)
+
+        for i in range(len(a) - 1):
+            self.assertLessEqual(a[i], a[i + 1], "Collection not sorted.")
+
+    def test_randomized_quick_sort(self):
+        a = [2, 8, 7, 1, 3, 5, 6, 4, 15, 13, 99, 82, 64, 81]
+        randomize_quicksort(a, 0, len(a) - 1)
+
+        for i in range(len(a) - 1):
+            self.assertLessEqual(a[i], a[i + 1], "Collection not sorted.")
+
+        a = [2, 8, 7, 1, 3, 5, 6, 4, 15, 13, 99, 82, 64, 81]
+        randomize_quicksort(a, 0, len(a) - 1, partition=randomized_partition)
+
+        for i in range(len(a) - 1):
+            self.assertLessEqual(a[i], a[i + 1], "Collection not sorted.")
+
+        a = [2, 8, 7, 1, 3, 5, 6, 4, 15, 13, 99, 82, 64, 81]
+        randomize_quicksort(a, 0, len(a) - 1, partition=hoare_partition)
+
+        for i in range(len(a) - 1):
+            self.assertLessEqual(a[i], a[i + 1], "Collection not sorted.")
+
+    def test_stooge_sort(self):
+        a = [2, 8, 7, 1, 3, 5, 6, 4, 15, 13, 99, 82, 64, 81]
+        stooge_sort(a, 0, len(a) - 1)
 
         for i in range(len(a) - 1):
             self.assertLessEqual(a[i], a[i + 1], "Collection not sorted.")
