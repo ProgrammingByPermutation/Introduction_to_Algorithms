@@ -739,22 +739,41 @@ class MinHeap(Heap):
 
 def counting_sort(collection, B, k=None):
     """
-    Chapter 8: Sorts using a counting sort.
-    :param collection:
-    :param B:
-    :param k:
-    :return:
-    """
+    Chapter 8: Counting sort. Counting sort is an integer sorting algorithm that sorts using the following steps:
+    1. Create an array of counts and store in the indexes the number of times a values equal to that index is present
+       in the original collection. This will essentially recreate the array in sorted order without any duplicates.
+    2. Loop through the array of counts adding each entry to its previous entry. This will leave us with the starting
+       index of each number set. (i.e if index 4 == 3 then all 4s will starts at 3)
+    3. Loop through the original collection. Use the values from the original collection as the index number in the
+       array of counts. The array of count's value tells you where the original collections value is supposed to be
+       in the sorted collection. Place the original collection's value where the array of counts tells you to.
 
+    This only works for collections of positive integers and becomes extremely inefficient when the largest and
+    smallest values in the original collection are far apart (regardless of the overall collection's size). For
+    example: [0, 2^256] would be much less efficient than a collection of [0...1000] because of how far apart the min
+    and max values are.
+    :param collection: The collection to sort.
+    :param B: The sorted collection.
+    :param k: The largest value in the collection.
+    """
+    if len(collection) != len(B):
+        raise Exception("collection and B must be the same size.")
+
+    if k is None:
+        k = max(collection) + 1
+
+    # For C[i], determine the number of elements equal to i
     C = [0] * k
     for j in range(0, len(collection)):
         C[collection[j]] = C[collection[j]] + 1
 
-    # C[i] now contains the number of elements equal to i
+    # For C[i], determine the number of elements less than or equal to i. This will be starting index for each value in
+    # the sorted collection.
     for i in range(1, k):
         C[i] = C[i] + C[i - 1]
 
-    # C[i] now contains the number of elements less than or equal to i
+    # Visit each value in the collection. Use the value as the index to the C (counts) array. Use the C array's value
+    # as the index to place the collection's value at in the sorted array.
     for j in range(len(collection), 0, -1):
         B[C[collection[j - 1]] - 1] = collection[j - 1]
         C[collection[j - 1]] = C[collection[j - 1]] - 1
@@ -763,6 +782,6 @@ def counting_sort(collection, B, k=None):
 if __name__ == "__main__":
     a = [2, 5, 3, 0, 2, 3, 0, 3]
     B = [None] * len(a)
-    counting_sort(a, B, 6)
+    counting_sort(a, B)
     print(a)
     print(B)
