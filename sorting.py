@@ -94,10 +94,16 @@ def quick_sort(collection, p=None, r=None):
         :param p: The lower bounds of the sort.
         :param r: The upper bounds of the sort.
         """
-        x = collection[r]
+        # Define the pivot point
+        pivot = collection[r]
+
+        # Sort the array given the following criteria
+        # 1. If p <= k <= i, then collection[k] <= pivot
+        # 2. If i + 1 <= k <= j - 1, then collection[k] > pivot
+        # 3. If k = r, then collection[k] = pivot
         i = p - 1
         for j in range(p, r):
-            if collection[j] <= x:
+            if collection[j] <= pivot:
                 i += 1
                 collection[i], collection[j] = collection[j], collection[i]
         collection[i + 1], collection[r] = collection[r], collection[i + 1]
