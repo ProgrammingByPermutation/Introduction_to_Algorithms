@@ -9,7 +9,8 @@ import random
 
 def insertion_sort(collection):
     """
-    Chapter 2: Sorts the provided collection using an insertion sort.
+    Chapter 2: Insertion sorts in place. An insertion sort works by visiting each element
+    in a collection and placing into the correct position relative to each of the elements before it.
     :param collection: A collection that can be indexed. Will be modified in place.
     """
     for j in range(1, len(collection)):
@@ -25,7 +26,12 @@ def insertion_sort(collection):
 
 def merge_sort(collection, p=None, r=None):
     """
-    Chapter 2: Merge sort.
+    Chapter 2: Merge sorts in place. The merge sort works by taking an array, or a section of an array, of starting
+    index p and ending index r, finding the midpoint between them q and diving it into two arrays:
+    left [p...q] and right [q+1...r]. It then recursively loops through these arrays re-applying and redefining p, r,
+    and consequently q for each recursion until there is only 1 thing each array. It then climbs back up the recursive
+    calls merging the two arrays together by comparing the values at each position and always placing the lower value
+    element in the left or right array before the higher value in the opposite array.
     :param collection: The collection to sort.
     :param p: The starting index.
     :param r: The ending index.
@@ -80,7 +86,8 @@ def merge_sort(collection, p=None, r=None):
 
 def bubble_sort(collection):
     """
-    Chapter 2: Bubble Sort.
+    Chapter 2: Bubble Sorts in place. Bubble sort works by looping through each element in an array and comparing it to
+    the element below it. If the values are out of order they are switched.
     :param collection: The collection to sort in place.
     """
     for i in range(len(collection)):
@@ -127,7 +134,9 @@ def stooge_sort(collection, i=None, j=None):
 
 def partition(collection, p, r):
     """
-    Chapter 7: Rearranges the sub array in place
+    Chapter 7: Rearranges the sub array (indexes p-r of the passed in collection) in place such that for a chosen pivot
+    (always the last element) all elements to the left of the pivot are less than or equal to it and all elements to the
+    right are larger than it.
     :param collection: The collection to sort.
     :param p: The lower bounds of the sort.
     :param r: The upper bounds of the sort.
@@ -150,7 +159,9 @@ def partition(collection, p, r):
 
 def randomized_partition(collection, p, r):
     """
-    Chapter 7: Rearranges the sub array in place using a randomized pivot point.
+    Chapter 7: Rearranges the sub array (indexes p-r of the passed in collection) in place such that for a chosen pivot
+    (a random element) all elements to the left of the pivot are less than or equal to it and all elements to the
+    right are larger than it.
     :param collection: The collection to sort.
     :param p: The lower bounds of the sort.
     :param r: The upper bounds of the sort.
@@ -162,7 +173,9 @@ def randomized_partition(collection, p, r):
 
 def hoare_partition(collection, p, r):
     """
-    Chapter 7: Rearranges the sub array in place. Original partition implementation by C. A. R. Hoare.
+    Chapter 7: Rearranges the sub array (indexes p-r of the passed in collection) in place such that for a chosen pivot
+    all elements to the left of the pivot are less than or equal to it and all elements to the right are larger than it.
+    Original partition implementation by C. A. R. Hoare.
     :param collection: The collection to sort.
     :param p: The lower bounds of the sort.
     :param r: The upper bounds of the sort.
@@ -187,7 +200,12 @@ def hoare_partition(collection, p, r):
 
 def quicksort(collection, p=None, r=None, partition=partition):
     """
-    Chapter 7: Quick sorts a collection in place.
+    Chapter 7: Quick sorts a collection in place. Quick sort works by defining an element as the pivot point (the
+    partition method chooses which element) and sorting the collection such that all elements to the left of the
+    pivot point are less than or equal to it and all elements to the right are greater than it. It then recurses and
+    performs the same operation the left and right sides of the pivot point. Since the pivot point is always placed in
+    the correct place relative to all of the rest of the collection and the recursive calls ensure each element is
+    visited as a pivot point the collection is sorted.
     :param collection: The collection to sort.
     :param p: The lower bounds of the sort.
     :param r: The upper bounds of the sort.
@@ -209,7 +227,12 @@ def quicksort(collection, p=None, r=None, partition=partition):
 
 def randomize_quicksort(collection, p=None, r=None, partition=randomized_partition):
     """
-    Chapter 7: Quick sorts a collection in place using a randomized pivot point.
+    Chapter 7: Quick sorts a collection in place. Quick sort works by defining an element as the pivot point (the
+    default partition method chooses randomly) and sorting the collection such that all elements to the left of the
+    pivot point are less than or equal to it and all elements to the right are greater than it. It then recurses and
+    performs the same operation the left and right sides of the pivot point. Since the pivot point is always placed in
+    the correct place relative to all of the rest of the collection and the recursive calls ensure each element is
+    visited as a pivot point the collection is sorted.
     :param collection: The collection to sort.
     :param p: The lower bounds of the sort.
     :param r: The upper bounds of the sort.
@@ -220,9 +243,16 @@ def randomize_quicksort(collection, p=None, r=None, partition=randomized_partiti
 
 def quicksort_tailrecursion(collection, p=None, r=None, partition=partition):
     """
-    Chapter 7: Quick sorts a collection in place. Algorithm uses tail recursion to avoid second recursive call.
+    Chapter 7: Quick sorts a collection in place. Quick sort works by defining an element as the pivot point (the
+    partition method chooses which element) and sorting the collection such that all elements to the left of the
+    pivot point are less than or equal to it and all elements to the right are greater than it. It then recurses and
+    performs the same operation the left and right sides of the pivot point. Since the pivot point is always placed in
+    the correct place relative to all of the rest of the collection and the recursive calls ensure each element is
+    visited as a pivot point the collection is sorted.
+
     NOTE: This method doesn't work in Python as the language's compiler doesn't support tail recursion. It is
           included for the purposes of completeness.
+
     :param collection: The collection to sort.
     :param p: The lower bounds of the sort.
     :param r: The upper bounds of the sort.
@@ -450,7 +480,13 @@ class MaxHeap(Heap):
 
     def heap_sort(self):
         """
-        Chapter 6: Sorts the heap in ascending order in place.
+        Chapter 6: Heap sorts in place in ascending order. The heap sort works by splitting an array into two section:
+        the heap [0...heap_size] and the sorted answer [heap_size - 1...len(array)]. It then sections off the entire
+        array as the heap. This done automatically when a MaxHeap object is created on the passed in collection. Next,
+        the largest item in the heap is removed (which is always the root node) and placed at the beginning of the
+        sorted answer section. Finally, the heap is rebalanced with a new maximum value root node and the process is
+        repeated until there are no more elements in the heap and the entire array is sectioned off as the sorted
+        answer.
         """
         # Called as a precaution to ensure that it is already true, as long as nothing was added it should be.
         self.build_max_heap()
@@ -594,7 +630,13 @@ class MinHeap(Heap):
 
     def heap_sort(self):
         """
-        Chapter 6: Sorts the heap in descending order in place.
+        Chapter 6: Heap sorts in place in descending order. The heap sort works by splitting an array into two section:
+        the heap [0...heap_size] and the sorted answer [heap_size - 1...len(array)]. It then sections off the entire
+        array as the heap. This done automatically when a MinHeap object is created on the passed in collection. Next,
+        the smallest item in the heap is removed (which is always the root node) and placed at the beginning of the
+        sorted answer section. Finally, the heap is rebalanced with a new minimum value root node and the process is
+        repeated until there are no more elements in the heap and the entire array is sectioned off as the sorted
+        answer.
         """
         # Called as a precaution to ensure that it is already true, as long as nothing was added it should be.
         self.build_min_heap()
@@ -695,8 +737,32 @@ class MinHeap(Heap):
 
 # endregion
 
+def counting_sort(collection, B, k=None):
+    """
+    Chapter 8: Sorts using a counting sort.
+    :param collection:
+    :param B:
+    :param k:
+    :return:
+    """
+
+    C = [0] * k
+    for j in range(0, len(collection)):
+        C[collection[j]] = C[collection[j]] + 1
+
+    # C[i] now contains the number of elements equal to i
+    for i in range(1, k):
+        C[i] = C[i] + C[i - 1]
+
+    # C[i] now contains the number of elements less than or equal to i
+    for j in range(len(collection), 0, -1):
+        B[C[collection[j - 1]] - 1] = collection[j - 1]
+        C[collection[j - 1]] = C[collection[j - 1]] - 1
+
 
 if __name__ == "__main__":
-    a = [2, 8, 7, 1, 3, 5, 6, 4, 15, 13, 99, 82, 64, 81]
-    quicksort_tailrecursion(a, 0, len(a) - 1)
+    a = [2, 5, 3, 0, 2, 3, 0, 3]
+    B = [None] * len(a)
+    counting_sort(a, B, 6)
     print(a)
+    print(B)
