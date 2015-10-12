@@ -698,5 +698,5 @@ class MinHeap(Heap):
 
 if __name__ == "__main__":
     a = [2, 8, 7, 1, 3, 5, 6, 4, 15, 13, 99, 82, 64, 81]
-    quicksort(a, 0, len(a) - 1)
+    quicksort_tailrecursion(a, 0, len(a) - 1)
     print(a)
