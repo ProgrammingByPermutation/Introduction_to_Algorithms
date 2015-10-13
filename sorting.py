@@ -737,7 +737,7 @@ class MinHeap(Heap):
 
 # endregion
 
-def counting_sort(collection, B, k=None):
+def counting_sort(collection, B, k=None, modifier=None):
     """
     Chapter 8: Counting sort. Counting sort is an integer sorting algorithm that sorts using the following steps:
     1. Create an array of counts and store in the indexes the number of times a values equal to that index is present
@@ -747,27 +747,33 @@ def counting_sort(collection, B, k=None):
     3. Loop through the original collection. Use the values from the original collection as the index number in the
        array of counts. The array of count's value tells you where the original collections value is supposed to be
        in the sorted collection. Place the original collection's value where the array of counts tells you to.
+       Decrement the number that was read in the counting array. This will ensure that next time the value comes up
+       in the original collection will be placed before the current position in the sorted collection.
 
     This only works for collections of positive integers and becomes extremely inefficient when the largest and
     smallest values in the original collection are far apart (regardless of the overall collection's size). For
     example: [0, 2^256] would be much less efficient than a collection of [0...1000] because of how far apart the min
     and max values are.
-    :param collection: The collection to sort.
+    :param collection: The collection to sort, must an indexable collection of integers.
     :param B: The sorted collection.
     :param k: The largest value in the collection. If you do not know the largest value of the collection at compile
               time and leave this value None it will be looked up for you. This adds an extra (n) to big O of the
               running time as each element will need to be visited to determine the maximum value.
+    :param modifier: A modifier to
     """
     if len(collection) != len(B):
         raise Exception("collection and B must be the same size.")
 
+    if modifier is None:
+        modifier = lambda x: x
+
     if k is None:
-        k = max(collection) + 1
+        k = max([modifier(x) for x in collection]) + 1
 
     # For C[i], determine the number of elements equal to i
     C = [0] * k
     for j in range(0, len(collection)):
-        C[collection[j]] = C[collection[j]] + 1
+        C[modifier(collection[j])] = C[modifier(collection[j])] + 1
 
     # For C[i], determine the number of elements less than or equal to i. This will be starting index for each value in
     # the sorted collection.
@@ -775,15 +781,34 @@ def counting_sort(collection, B, k=None):
         C[i] = C[i] + C[i - 1]
 
     # Visit each value in the collection. Use the value as the index to the C (counts) array. Use the C array's value
-    # as the index to place the collection's value at in the sorted array.
+    # as the index to place the collection's value at in the sorted array. Decrement the value in C's array so the next
+    # time the value comes up it will be placed before the current position in the sorted array.
     for j in range(len(collection), 0, -1):
-        B[C[collection[j - 1]] - 1] = collection[j - 1]
-        C[collection[j - 1]] = C[collection[j - 1]] - 1
+        B[C[modifier(collection[j - 1])] - 1] = collection[j - 1]
+        C[modifier(collection[j - 1])] = C[modifier(collection[j - 1])] - 1
+
+
+def radix_sort(collection, d=None):
+    """
+    Chapter 8: Radix sort. A radix sort performs a sort by examining each digit of each number in the collection from
+    least significant digit to most significant digit sorting the entire collection based solely on the current digit.
+    :param collection: The collection to sort, must be an indexable collection of integers.
+    :param d: The number of digits.
+    :return: The sorted collection.
+    """
+    if d is None:
+        d = len(str(max(collection)))
+
+    B = list(collection)
+    for i in range(0, d):
+        # Modifier could also be: "lambda x: int(str(x)[-i])" if the loop was: "range(1, d + 1)"
+        # We were just trying to get fancy with the math.
+        counting_sort(collection, B, modifier=lambda x: (x // (10 ** i)) % 10)
+        collection = B[:]
+
+    return B
 
 
 if __name__ == "__main__":
-    a = [2, 5, 3, 0, 2, 3, 0, 3]
-    B = [None] * len(a)
-    counting_sort(a, B)
-    print(a)
-    print(B)
+    a = [329, 457, 657, 839, 436, 720, 355]
+    print(radix_sort(a))

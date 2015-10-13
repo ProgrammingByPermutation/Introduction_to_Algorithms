@@ -85,11 +85,17 @@ class TestMiscSort(TestCase):
 
     def test_counting_sort(self):
         a = [2, 5, 3, 0, 2, 3, 0, 3]
-        B = [None] * len(a)
-        counting_sort(a, B)
+        b = [None] * len(a)
+        counting_sort(a, b)
 
-        for i in range(len(B) - 1):
-            self.assertLessEqual(B[i], B[i + 1], "Collection not sorted. " + str(B))
+        for i in range(len(b) - 1):
+            self.assertLessEqual(b[i], b[i + 1], "Collection not sorted. " + str(b))
+
+    def test_radix_sort(self):
+        a = [329, 457, 657, 839, 436, 720, 355]
+        b = radix_sort(a)
+        for i in range(len(b) - 1):
+            self.assertLessEqual(b[i], b[i + 1], "Collection not sorted. " + str(b))
 
 
 class TestMaxHeap(TestCase):
