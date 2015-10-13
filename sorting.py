@@ -814,28 +814,33 @@ def bucket_sort(collection):
     """
     Chapter 9: Bucket sort. The bucket sort assumes that all of the of the collection's inputs are in the range [0, 1).
     It operates by first creating a list of buckets. Then it assigns each input from the collection a bucket index based
-    on the first digit of the input (i.e .78 would be index 7). Next, it sorts each bucket using an insertion sort.
-    Finally, it flattens the list of buckets into a single array being sure the buckets and their inputs are combined
-    in order.
+    on the input's value such that the inputs are evenly distributed over the possible range of buckets. Next, it sorts
+    each bucket using an insertion sort. Finally, it flattens the list of buckets into a single array being sure the
+    buckets and their inputs are combined in order.
     :param collection: The collection to sort. The collection is assumed to be made up of inputs that fall in the range
                        [0, 1). For the best possible results it is assumed that the inputs are drawn from a uniform
                        distribution.
     :return: The sorted collection.
     """
     n = len(collection)
+
+    # Create the list of buckets
     B = [None] * n
     for i in range(n):
         B[i] = []
 
+    # Put each input into a bucket. The inputs should be evenly distributed over the total number of possible buckets
     for i in range(0, n):
         B[math.floor(n * collection[i])].append(collection[i])
 
+    # Loop through and sort each bucket in ascending order
     for i in range(0, n - 1):
         insertion_sort(B[i])
 
+    # Flatten out all of the entries into a single array
     return [item for sublist in B for item in sublist]
 
 
 if __name__ == "__main__":
-    a = [.78, .17, .39, .26, .72, .94, .21, .12, .23, .68]
+    a = [.78, .17, .39, .26, .72, .94, .21, .12, .23, .68, .52, .71, .40, .63]
     print(bucket_sort(a))
