@@ -838,7 +838,7 @@ def bucket_sort(collection):
         insertion_sort(B[i])
 
     # Flatten out all of the entries into a single array
-    return [item for sublist in B for item in sublist]
+    return [item for bucket in B for item in bucket]
 
 
 if __name__ == "__main__":
