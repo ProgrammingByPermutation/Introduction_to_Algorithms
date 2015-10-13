@@ -759,7 +759,8 @@ def counting_sort(collection, B, k=None, modifier=None):
     :param k: The largest value in the collection. If you do not know the largest value of the collection at compile
               time and leave this value None it will be looked up for you. This adds an extra (n) to big O of the
               running time as each element will need to be visited to determine the maximum value.
-    :param modifier: A modifier to
+    :param modifier: A modifier that will run on each entry of the collection to change it for counting. The output
+                     of this modifier should be an integer value.
     """
     if len(collection) != len(B):
         raise Exception("collection and B must be the same size.")
