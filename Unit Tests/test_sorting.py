@@ -97,6 +97,12 @@ class TestMiscSort(TestCase):
         for i in range(len(b) - 1):
             self.assertLessEqual(b[i], b[i + 1], "Collection not sorted. " + str(b))
 
+    def test_bucket_sort(self):
+        a = [.78, .17, .39, .26, .72, .94, .21, .12, .23, .68]
+        b = bucket_sort(a)
+        for i in range(len(b) - 1):
+            self.assertLessEqual(b[i], b[i + 1], "Collection not sorted. " + str(b))
+
 
 class TestMaxHeap(TestCase):
     def heap_integrity_check(self, heap):
