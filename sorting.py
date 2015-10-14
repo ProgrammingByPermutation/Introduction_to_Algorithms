@@ -824,7 +824,8 @@ def bucket_sort(collection):
     """
     n = len(collection)
 
-    # Create the list of buckets
+    # Create the list of buckets, technically the buckets are supposed to be linked lists but the point here is to
+    # illustrate the code here easily and concisely not write linked list code for the 400th time.
     B = [None] * n
     for i in range(n):
         B[i] = []
