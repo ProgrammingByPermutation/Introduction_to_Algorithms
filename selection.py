@@ -1,3 +1,6 @@
+from sorting import randomized_partition
+
+
 def minimum(collection):
     """
     Chapter 9: Determines the minimum value in the collection.
@@ -81,3 +84,42 @@ def minimum_maximum(collection):
                 max = collection[i]
 
     return (min, max)
+
+
+def randomized_select(collection, p, r, i):
+    """
+    Chapter 9: Performs a randomized select. The algorithm works much like the quicksort algorithm and has the side
+    effect of having to sort the collection in place to accomplish the selection. The algorithm starts by partitioning
+    the array into two sub-arrays and a pivot point. It then sorts the sub-arrays so that everything less than the
+    pivot point is on the left and anything larger is on the right. Next, the algorithm counts the number of elements
+    in the left side array plus 1 for the pivot point. If at this point if the count and i are the same we've found
+    the i-th smallest value. Otherwise we recurse down the left or right side array until they are.
+    :param collection: The collection to select from.
+    :param p: The starting index of the search.
+    :param r: The ending index of the search.
+    :param i: The i-th smallest element in the array to find. i = 1 is the minimum and i = len(collection) is the
+              maximum.
+    :return: The value of the i-th smallest element in the array.
+    """
+    # If there is only one thing in the collection it is the i-th value. Surely no one would pass us a i value that
+    # is larger than their entire collection. That would be cruel!
+    if p == r:
+        return collection[p]
+
+    # Randomly split the array into a right and left side and sort them such that less than or equal to values are on
+    # the left side and greater than values are on the right.
+    q = randomized_partition(collection, p, r)
+
+    # Find the pivot index
+    k = q - p + 1
+
+    # If the i-th value we're looking for = k then the pivot values is the i-th value. We know this because the
+    # collection is sorted as such.
+    #
+    # Otherwise, recurse down the path of the left or right array to find the i-th value.
+    if i == k:
+        return collection[q]
+    elif i < k:
+        return randomized_select(collection, p, q - 1, i)
+    else:
+        return randomized_select(collection, q + 1, r, i - k)
