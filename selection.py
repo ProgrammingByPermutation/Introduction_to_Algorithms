@@ -83,7 +83,7 @@ def minimum_maximum(collection):
             if max < collection[i]:
                 max = collection[i]
 
-    return (min, max)
+    return min, max
 
 
 def randomized_select(collection, p, r, i):
