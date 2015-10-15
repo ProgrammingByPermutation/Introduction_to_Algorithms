@@ -2,17 +2,6 @@ from unittest import TestCase
 
 from utilities import *
 
-
-class TestOneBasedList(TestCase):
-    def test_indexes(self):
-        one_based = OneBasedList(range(10))
-        regular = range(10)
-
-        # Make sure everything is one off
-        for i in range(1, 11):
-            self.assertEquals(one_based[i], regular[i - 1])
-
-
 class TestRandom(TestCase):
     def assert_notequal_contains(self, source, value, printValue=False):
         """

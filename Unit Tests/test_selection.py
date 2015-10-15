@@ -25,10 +25,6 @@ class TestSelection(TestCase):
         self.assertEquals(randomized_select(collection, 0, len(collection) - 1, len(collection)), 98)
 
         # Test that each entry in the collection is found to be in correct i-th smallest entry position
-        print(collection)
-        print(sorted(collection))
-        print(collection)
-
         i = 1
         for entry in sorted(collection):
             self.assertEquals(randomized_select(collection, 0, len(collection) - 1, i), entry)
