@@ -123,29 +123,30 @@ class Queue(OneBasedList):
         return x
 
 
+class LinkedListNode:
+    """
+    Represents all of the values of a linked list node.
+    """
+
+    def __init__(self, key, prev_node=None, next_node=None):
+        """
+        Initializes a new instance of the linked list class.
+        :param key: The value to store in the linked list node.
+        :param prev_node: A reference to the previous element in the list.
+        :param next_node: A reference to the next_node element in the list.
+        """
+        self.key = key
+        self.prev_node = prev_node
+        self.next_node = next_node
+
+    def __str__(self):
+        return str(self.key)
+
+
 class LinkedList:
     """
     Chapter 10: A linked list class.
     """
-
-    class LinkedListNode:
-        """
-        Represents all of the values of a linked list node.
-        """
-
-        def __init__(self, key, prev=None, next=None):
-            """
-            Initializes a new instance of the linked list class.
-            :param key: The value to store in the linked list node.
-            :param prev: A reference to the previous element in the list.
-            :param next: A reference to the next element in the list.
-            """
-            self.key = key
-            self.prev = prev
-            self.next = next
-
-        def __str__(self):
-            return str(self.key)
 
     def __init__(self):
         self.head = None
@@ -158,11 +159,13 @@ class LinkedList:
             while True:
                 node_value = node.key
 
-                if node.next is not None:
+                if node.next_node is not None:
                     value += str(node_value) + ', '
                 else:
                     value += str(node_value)
                     break
+
+                node = node.next_node
 
         value += ']'
         return value
@@ -175,7 +178,7 @@ class LinkedList:
         """
         x = self.head
         while x is not None and x.key != k:
-            x = x.next
+            x = x.next_node
         return x
 
     def list_insert(self, x):
@@ -183,11 +186,11 @@ class LinkedList:
         Chapter 10: Inserts the provided key into the head of the list.
         :param x: The key to insert into the collection.
         """
-        x = LinkedList.LinkedListNode(x, next=self.head)
+        new_node = LinkedListNode(x, next_node=self.head)
         if self.head is not None:
-            self.head.prev = x
-        self.head = x
-        x.prev = None
+            self.head.prev_node = new_node
+        self.head = new_node
+        new_node.prev_node = None
 
     def list_delete(self, x):
         """
@@ -195,13 +198,13 @@ class LinkedList:
         :param x: The key to remove.
         """
         # Not in the original code, just here for convenience.
-        if x is not LinkedList.LinkedListNode:
+        if x is not LinkedListNode:
             x = self.list_search(x)
 
-        if x.prev is not None:
-            x.prev.next = x.next
+        if x.prev_node is not None:
+            x.prev_node.next_node = x.next_node
         else:
-            self.head = x.next
+            self.head = x.next_node
 
-        if x.next is not None:
-            x.next.prev = x.prev
+        if x.next_node is not None:
+            x.next_node.prev_node = x.prev_node
