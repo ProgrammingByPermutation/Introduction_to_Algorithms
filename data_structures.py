@@ -310,3 +310,55 @@ class LinkedListSentinel:
 
         x.prev_node.next_node = x.next_node
         x.next_node.prev_node = x.prev_node
+
+
+class BinaryTreePointers:
+    """
+    Chapter 10: A representation of a tree using pointers. Each node has a pointer to a left child, a right child, and its parent.
+    """
+
+    class TreeNode:
+        """
+        A tree node. If the parent node is None the node is assumed to be the root node.
+        """
+
+        def __init__(self, key, p=None, left=None, right=None):
+            """
+            Initializes a new instance of the TreeNode class.
+            :param key: The key value of the node.
+            :param p: The parent node.
+            :param left: The left child node.
+            :param right: The right child node.
+            """
+            self.p = p
+            self.left = left
+            self.right = right
+            self.key = key
+
+    def __init__(self):
+        self.root = None
+
+
+class RootedTree:
+    """
+    Chapter 10: A tree with an unbounded number of child nodes. Nodes have a pointer to the parent, left child, and right sibling.
+    This means that no node has a pointer to its right child. Instead the left child must be retrieved and its right
+    sibling accessed. Right siblings do contain a reference to their parent.
+    """
+
+    class TreeNode:
+        def __init__(self, key, p=None, left_child=None, right_sibling=None):
+            """
+            Initializes a new instance of the TreeNode class.
+            :param key: The key value of the node.
+            :param p: The parent node.
+            :param left_child: The left child node.
+            :param right_sibling: The right sibling node at the same level of the tree.
+            """
+            self.key = key
+            self.p = p
+            self.left_child = left_child
+            self.right_sibling = right_sibling
+
+    def __init__(self):
+        self.root = None
