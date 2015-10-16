@@ -216,3 +216,97 @@ class LinkedList:
 
         if x.next_node is not None:
             x.next_node.prev_node = x.prev_node
+
+
+class LinkedListSentinel:
+    """
+    Chapter 10: A linked list class that uses sentinels. A sentinel is a dummy value that allows us to avoid some
+    complexity when performing operations by avoiding boundary conditions. A sentinel value can also reduce running time
+    when a significant amount of time is spent checking boundary conditions in loops. The sentinel while empty and
+    meaningless contains all of the methods of a valid value being understood to be the end of the list. A sentinel
+    should not be used when there are a large number of small lists since the sentinel wastes memory.
+    """
+
+    class LinkedListNode:
+        """
+        Represents all of the values of a linked list node.
+        """
+
+        def __init__(self, key, prev_node=None, next_node=None):
+            """
+            Initializes a new instance of the linked list class.
+            :param key: The value to store in the linked list node.
+            :param prev_node: A reference to the previous element in the list.
+            :param next_node: A reference to the next_node element in the list.
+            """
+            self.key = key
+            self.prev_node = prev_node
+            self.next_node = next_node
+
+        def __str__(self):
+            return str(self.key)
+
+    def __init__(self):
+        self.sentinel = LinkedListSentinel.LinkedListNode(None)
+        self.sentinel.next_node = self.sentinel
+        self.sentinel.prev_node = self.sentinel
+
+    def __str__(self):
+        value = '['
+        node = self.sentinel.next_node
+        if node != self.sentinel:
+            while True:
+                node_value = node.key
+
+                if node.next_node != self.sentinel:
+                    value += str(node_value) + ', '
+                else:
+                    value += str(node_value)
+                    break
+
+                node = node.next_node
+
+        value += ']'
+        return value
+
+    def __len__(self):
+        i = 0
+        node = self.sentinel.next_node
+        while node != self.sentinel:
+            i += 1
+            node = node.next_node
+
+        return i
+
+    def list_search(self, k):
+        """
+        Chapter 10: Searches for the first occurrence of the supplied key.
+        :param k: The key to search for.
+        :return: The node of the key if found, None otherwise.
+        """
+        x = self.sentinel.next_node
+        while x != self.sentinel and x.key != k:
+            x = x.next_node
+        return x
+
+    def list_insert(self, x):
+        """
+        Chapter 10: Inserts the provided key into the head of the list.
+        :param x: The key to insert into the collection.
+        """
+        x = LinkedListSentinel.LinkedListNode(x, next_node=self.sentinel.next_node)
+        self.sentinel.next_node.prev_node = x
+        self.sentinel.next_node = x
+        x.prev_node = self.sentinel
+
+    def list_delete(self, x):
+        """
+        Chapter 10: Removes the provided key from the collection.
+        :param x: The key to remove.
+        """
+        # Not in the original code, just here for convenience.
+        if x is not LinkedListSentinel.LinkedListNode:
+            x = self.list_search(x)
+
+        x.prev_node.next_node = x.next_node
+        x.next_node.prev_node = x.prev_node

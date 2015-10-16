@@ -101,3 +101,44 @@ class TestLinkedList(TestCase):
                 node = node.next_node
 
         self.assertEqual(len(list), 0, "List not empty.")
+
+
+class TestLinkedListSentinel(TestCase):
+    def test_insert(self):
+        list = LinkedListSentinel()
+        list.list_insert(1)
+        list.list_insert(2)
+        list.list_insert(3)
+        list.list_insert(4)
+
+        node = list.sentinel.next_node
+        for x in range(4, 0, -1):
+            self.assertEquals(node.key, x, "Insert failed.")
+            node = node.next_node
+
+    def test_search(self):
+        list = LinkedListSentinel()
+        list.list_insert(1)
+        list.list_insert(2)
+        list.list_insert(3)
+        list.list_insert(4)
+
+        for x in range(4, 0, -1):
+            self.assertEquals(list.list_search(x).key, x, "Search failed.")
+
+    def test_delete(self):
+        list = LinkedListSentinel()
+        list.list_insert(1)
+        list.list_insert(2)
+        list.list_insert(3)
+        list.list_insert(4)
+
+        for x in range(4, 0, -1):
+            list.list_delete(x)
+
+            node = list.sentinel.next_node
+            for i in range(x - 1, 0, -1):
+                self.assertEquals(node.key, i, "Delete failed.")
+                node = node.next_node
+
+        self.assertEqual(len(list), 0, "List not empty.")
