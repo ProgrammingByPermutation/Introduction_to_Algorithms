@@ -362,3 +362,56 @@ class RootedTree:
 
     def __init__(self):
         self.root = None
+
+
+class DirectAccessTable:
+    """
+    A data structure that has very efficient searching capabilities when the number of keys is very small.
+    """
+
+    class Entry:
+        """
+        A entry in the table.
+        """
+
+        def __init__(self, key, satellite_data=None):
+            self.key = key
+            self.satellite_data = satellite_data
+
+    def __init__(self, size):
+        self.list = [None] * size
+
+    def __getitem__(self, item):
+        return self.list[item]
+
+    def __setitem__(self, key, value):
+        self.list[key] = value
+
+    def direct_address_search(self, k):
+        """
+        Returns the passed in key directly from the collection.
+        :param k: The key to return the value of.
+        :return: The value at key.
+        """
+        return self[k]
+
+    def direct_address_insert(self, x, satellite_data=None):
+        """
+        Inserts an entry directly into the DirectAccessTable's collection.
+        :param x: The key value to insert or the DirectAccessTable.Entry to add.
+        :param satellite_data: The satellite data to include. Will not be used if x is DirectAccessTable.Entry.
+        """
+        if x is not DirectAccessTable.Entry:
+            x = DirectAccessTable.Entry(x, satellite_data)
+
+        self[x.key] = x
+
+    def direct_access_delete(self, x):
+        """
+        Removes an entry from the DirectAccessTable.
+        :param x: The key value or the DirectAccessTable.Entry to remove.
+        """
+        if x is not DirectAccessTable.Entry:
+            x = DirectAccessTable.Entry(x)
+
+        self[x.key] = None
