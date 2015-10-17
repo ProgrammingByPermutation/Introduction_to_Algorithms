@@ -320,7 +320,8 @@ class LinkedListSentinel:
 
 class BinaryTreePointers:
     """
-    Chapter 10: A representation of a tree using pointers. Each node has a pointer to a left child, a right child, and its parent.
+    Chapter 10: A representation of a tree using pointers. Each node has a pointer to a left child, a right child, and
+    its parent.
     """
 
     class TreeNode:
@@ -328,7 +329,7 @@ class BinaryTreePointers:
         A tree node. If the parent node is None the node is assumed to be the root node.
         """
 
-        def __init__(self, key, p=None, left=None, right=None):
+        def __init__(self, key, p=None, left=None, right=None, satellite=None):
             """
             Initializes a new instance of the TreeNode class.
             :param key: The key value of the node.
@@ -340,16 +341,205 @@ class BinaryTreePointers:
             self.left = left
             self.right = right
             self.key = key
+            self.satellite = satellite
+
+        def __str__(self):
+            return str(self.key)
 
     def __init__(self):
         self.root = None
 
 
+class BinarySearchTree(BinaryTreePointers):
+    """
+    Chapter 12: A binary search tree satisfies the constraints that for every node x its left child will be less than
+    or equal to it and its right child will be greater than or equal to it.
+    """
+
+    def __init__(self):
+        BinaryTreePointers.__init__(self)
+        self.root = None
+
+    def inorder_tree_walk(self, x, function=lambda x: print(x.key)):
+        """
+        Chapter 12: Walks the binary tree in ascending order.
+        :param x: The node to start the walk from.
+        :param x: The node to walk from.
+        :param function: The function to call for each node.
+        """
+        # Pre-conditions
+        if x is None:
+            return
+
+        self.inorder_tree_walk(x.left)
+        function(x.key)
+        self.inorder_tree_walk(x.right)
+
+    def tree_search(self, x, k):
+        """
+        Chapter 12: Searches for a given key in the binary search tree.
+        :param x: The node to search from.
+        :param k: The key to search for.
+        :return: The tree node with the given key.
+        """
+        if x is None or k == x.key:
+            return x
+
+        if k < x.key:
+            return self.tree_search(x.left, k)
+        else:
+            return self.tree_search(x.right, k)
+
+    def iterative_tree_search(self, x, k):
+        """
+        Chapter 12: Iteratively searches for the given key in a binary tree. Faster than tree_search.
+        :param x: The node to search from.
+        :param k: The key to search for.
+        :return: The tree node with the given key.
+        """
+        while x is not None and k != x.key:
+            if k < x.key:
+                x = x.left
+            else:
+                x = x.right
+
+        return x
+
+    def tree_minimum(self, x):
+        """
+        Chapter 12: Finds the minimum key value in the tree.
+        :param x: The node to search from.
+        :return: The node with the minimum key value in the tree.
+        """
+        while x.left is not None:
+            x = x.left
+
+        return x
+
+    def tree_maximum(self, x):
+        """
+        Chapter 12: Finds the maximum key value in the tree.
+        :param x: The node to search from.
+        :return: The node with the maxmimum key value in the tree.
+        """
+        while x.right is not None:
+            x = x.right
+
+        return x
+
+    def tree_successor(self, x):
+        """
+        Chapter 12: Finds the successor of a given node.
+        :param x: The node to find the successor of.
+        """
+        if x.right is not None:
+            return self.tree_minimum(x.right)
+
+        y = x.p
+        while y is not None and x == y.right:
+            x = y
+            y = y.p
+
+        return y
+
+    def tree_predecessor(self, x):
+        """
+        Chapter 12: Finds the predecessor of a given node.
+        :param x: The node to find the predecessor of.
+        """
+        if x.left is not None:
+            return self.tree_maximum(x.left)
+
+        y = x.p
+        while y is not None and x == y.left:
+            x = y
+            y = y.p
+
+        return y
+
+    def tree_insert(self, z):
+        """
+        Chapter 12: Inserts the given node into the tree.
+        :param z: The node or value to add to the tree.
+        """
+        if type(z) is not BinaryTreePointers.TreeNode:
+            z = BinaryTreePointers.TreeNode(z)
+
+        z.left = None
+        z.right = None
+
+        y = None
+        x = self.root
+
+        # Find the correct place in the tree for the node given the rules for a binary tree.
+        # Save off the parent
+        while x is not None:
+            y = x
+            if z.key < x.key:
+                x = x.left
+            else:
+                x = x.right
+
+        # Determine if the new node is the root of the tree otherwise set the parent and link the two
+        # nodes together.
+        z.p = y
+        if y is None:
+            self.root = z
+        else:
+            if z.key < y.key:
+                y.left = z
+            else:
+                y.right = z
+
+    def tree_delete(self, z):
+        """
+        Chapter 12: Removes a node from the tree. This is trickier than inserting. You'll be in one of three situations that will
+        be handled accordingly:
+        1. z has no children: Just remove z by disconnecting it from the parent.
+        2. z has one child: Splice out z by connecting its child to z's position in its parent.
+        3. z has two children: Splice out its successor (y) which will have at most one child and then replace z's key
+                               and satellite data with y's key and satellite data.
+        :param z: The node to remove.
+        :return: The removed node.
+        """
+        # Determine the node to splice out. y is either the node passed in or the successor of the node passed in.
+        if z.left is None or z.right is None:
+            y = z
+        else:
+            y = self.tree_successor(z)
+
+        # Set x to the child of y if one exists.
+        if y.left is not None:
+            x = y.left
+        else:
+            x = y.right
+
+        # Splice out node y
+        if x is not None:
+            x.p = y.p
+
+        if y.p is None:
+            self.root = x
+        else:
+            if y == y.p.left:
+                y.p.left = x
+            else:
+                y.p.right = x
+
+        # If y was the successor of z (i.e if z had two children when passed in) move y's data to z
+        if y != z:
+            # Copy all the data, not just the key
+            z.key = y.key
+            z.satellite = y.satellite
+
+        return y
+
+
 class RootedTree:
     """
-    Chapter 10: A tree with an unbounded number of child nodes. Nodes have a pointer to the parent, left child, and right sibling.
-    This means that no node has a pointer to its right child. Instead the left child must be retrieved and its right
-    sibling accessed. Right siblings do contain a reference to their parent.
+    Chapter 10: A tree with an unbounded number of child nodes. Nodes have a pointer to the parent, left child, and
+    right sibling. This means that no node has a pointer to its right child. Instead the left child must be retrieved
+    and its right sibling accessed. Right siblings do contain a reference to their parent.
     """
 
     class TreeNode:

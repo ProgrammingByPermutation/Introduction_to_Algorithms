@@ -200,3 +200,95 @@ class TestHashTable(TestCase):
 
         for x in range(10, 20):
             self.assertEqual(hash_table.hash_search(x), answers[x - 10])
+
+
+class TestBinarySearchTree(TestCase):
+    def test_insert(self):
+        tree = BinarySearchTree()
+        tree.root = BinarySearchTree.TreeNode(12)
+        tree.root.left = BinarySearchTree.TreeNode(5)
+        tree.root.left.p = tree.root
+        tree.root.left.left = BinarySearchTree.TreeNode(2)
+        tree.root.left.left.p = tree.root.left
+        tree.root.left.right = BinarySearchTree.TreeNode(9)
+        tree.root.left.right.p = tree.root.left
+        tree.root.right = BinarySearchTree.TreeNode(18)
+        tree.root.right.p = tree.root
+        tree.root.right.left = BinarySearchTree.TreeNode(15)
+        tree.root.right.left.p = tree.root.right
+        tree.root.right.right = BinarySearchTree.TreeNode(19)
+        tree.root.right.right.p = tree.root.right
+        tree.root.right.left.right = BinarySearchTree.TreeNode(17)
+        tree.root.right.left.right.p = tree.root.right.left
+
+        tree.tree_insert(13)
+
+        self.assertEqual(tree.root.right.left.left.key, 13)
+        self.assertEqual(tree.root.right.left.left.p, tree.root.right.left)
+        self.assertEqual(tree.root.right.left.left.right, None)
+        self.assertEqual(tree.root.right.left.left.left, None)
+
+    def test_delete(self):
+        tree = BinarySearchTree()
+        tree.tree_insert(15)
+        tree.tree_insert(5)
+        tree.tree_insert(3)
+        tree.tree_insert(12)
+        tree.tree_insert(10)
+        tree.tree_insert(13)
+        tree.tree_insert(6)
+        tree.tree_insert(7)
+        tree.tree_insert(16)
+        tree.tree_insert(20)
+        tree.tree_insert(18)
+        tree.tree_insert(23)
+
+        # Did we set it up correctly?
+        self.assertEqual(tree.root.left.right.right.key, 13)
+
+        # Does deleting a node with no children work?
+        tree.tree_delete(tree.root.left.right.right)
+        self.assertEqual(tree.root.left.right.right, None)
+
+        tree = BinarySearchTree()
+        tree.tree_insert(15)
+        tree.tree_insert(5)
+        tree.tree_insert(3)
+        tree.tree_insert(12)
+        tree.tree_insert(10)
+        tree.tree_insert(13)
+        tree.tree_insert(6)
+        tree.tree_insert(7)
+        tree.tree_insert(16)
+        tree.tree_insert(20)
+        tree.tree_insert(18)
+        tree.tree_insert(23)
+
+        # Did we set it up correctly?
+        self.assertEqual(tree.root.right.key, 16)
+
+        # Does deleting a node with one child work?
+        tree.tree_delete(tree.root.right)
+        self.assertEqual(tree.root.right.key, 20)
+
+        tree = BinarySearchTree()
+        tree.tree_insert(15)
+        tree.tree_insert(5)
+        tree.tree_insert(3)
+        tree.tree_insert(12)
+        tree.tree_insert(10)
+        tree.tree_insert(13)
+        tree.tree_insert(6)
+        tree.tree_insert(7)
+        tree.tree_insert(16)
+        tree.tree_insert(20)
+        tree.tree_insert(18)
+        tree.tree_insert(23)
+
+        # Did we set it up correctly?
+        self.assertEqual(tree.root.left.key, 5)
+
+        # Does deleting a node with two children work?
+        tree.tree_delete(tree.root.left)
+        self.assertEqual(tree.root.left.key, 6)
+        self.assertEqual(tree.root.left.right.left.left.key, 7)
