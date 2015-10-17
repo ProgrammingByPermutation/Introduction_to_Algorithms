@@ -467,7 +467,6 @@ class HashTable:
         if self.A is None:
             # A should be between 0 and 1, value made up.
             self.A = random.random()
-            print('A: ' + str(self.A))
 
         return math.floor(len(self.hash_table) * ((k * self.A) % 1))
 

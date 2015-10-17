@@ -152,7 +152,6 @@ class TestHashTable(TestCase):
         for x in range(10, 20):
             answers[x - 10] = hash_table.hash_insert(x)
 
-        print(answers)
         for x in range(10, 20):
             self.assertEqual(hash_table.hash_search(x), answers[x - 10])
 
@@ -175,7 +174,6 @@ class TestHashTable(TestCase):
         for x in range(10, 20):
             answers[x - 10] = hash_table.hash_chained_insert(x)
 
-        print(answers)
         for x in range(10, 20):
             self.assertEqual(hash_table.hash_chained_search(x), answers[x - 10])
 
@@ -187,7 +185,6 @@ class TestHashTable(TestCase):
         for x in range(10, 20):
             answers[x - 10] = hash_table.hash_insert(x)
 
-        print(answers)
         for x in range(10, 20):
             self.assertEqual(hash_table.hash_search(x), answers[x - 10])
 
@@ -201,6 +198,5 @@ class TestHashTable(TestCase):
         for x in range(10, 20):
             answers[x - 10] = hash_table.hash_insert(x)
 
-        print(answers)
         for x in range(10, 20):
             self.assertEqual(hash_table.hash_search(x), answers[x - 10])
