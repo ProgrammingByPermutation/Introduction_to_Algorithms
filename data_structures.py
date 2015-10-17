@@ -1,3 +1,7 @@
+import random
+import math
+
+
 class OneBasedList:
     """
     A list that uses a one-based index. This is how the book's arrays work. Useful for debugging when converting to a
@@ -415,3 +419,67 @@ class DirectAccessTable:
             x = DirectAccessTable.Entry(x)
 
         self[x.key] = None
+
+
+class HashTable:
+    """
+    Chapter 11: A data structure optimized for searching. Works by passing entries through a hash function that converts search
+    data into the index of the table of values.
+    """
+
+    def __init__(self, size):
+        """
+        Initializes a new instance of the hash table class.
+        :param size: The size of the hash table to create.
+        """
+        self.hash_table = [None] * size
+
+    def hash_division(self, k):
+        """
+        Hash division is accomplished by taking the remainder of a division operation. If hash division is used
+        the size of the collection should not be a power of 2. The reason being that if hash_table size equals 2^P then
+        hash_division(k) will equal the lower p bits of k. Unless the keys passed in have an equally distributed pattern
+        of lower p bits this will result in many collisions. Prime numbers that are not close to a power of 2 tend
+        to be good sizes for this hashing algorithm.
+        :param k: The key to computer the hash of.
+        :return: The hash value.
+        """
+        return k % len(self.hash_table)
+
+    def hash_multiplication(self, k):
+        """
+        Hash multiplication is accomplished by plugging the key into a mathematical equation. This has the advantage of
+        not placing enough emphasis on the size of the hash table.
+        :param k: The key to hash.
+        :return: The hash value.
+        """
+        if self.A is None:
+            # A should be between 0 and 1
+            self.A = random.random()
+
+        return math.floor(len(self.hash_table) * ((k * self.A) % 1))
+
+    def chained_hash_insert(self, x):
+        """
+        Inserts a value into the linked list at a given hash table location.
+        :param x: The value to insert into the hash table.
+        """
+        linked_list = self.hash_table[hash(x.key)]
+        linked_list.list_insert(x)
+
+    def chained_hash_search(self, k):
+        """
+        Finds a value in the linked list at a given hash table location.
+        :param k: The key to look up.
+        :return: The element at the provided key location.
+        """
+        linked_list = self.hash_table[hash(k)]
+        return linked_list.list_search(k)
+
+    def chained_hash_delete(self, x):
+        """
+        Removes a value from the linked list at a given hash table location.
+        :param x: The value to remove from the hash table.
+        """
+        linked_list = self.hash_table[hash(x.key)]
+        linked_list.list_delete(x)
