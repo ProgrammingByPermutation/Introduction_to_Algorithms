@@ -370,7 +370,7 @@ class RootedTree:
 
 class DirectAccessTable:
     """
-    A data structure that has very efficient searching capabilities when the number of keys is very small.
+    Chapter 11: A data structure that has very efficient searching capabilities when the number of keys is very small.
     """
 
     class Entry:
@@ -393,7 +393,7 @@ class DirectAccessTable:
 
     def direct_address_search(self, k):
         """
-        Returns the passed in key directly from the collection.
+        Chapter 11: Returns the passed in key directly from the collection.
         :param k: The key to return the value of.
         :return: The value at key.
         """
@@ -401,7 +401,7 @@ class DirectAccessTable:
 
     def direct_address_insert(self, x, satellite_data=None):
         """
-        Inserts an entry directly into the DirectAccessTable's collection.
+        Chapter 11: Inserts an entry directly into the DirectAccessTable's collection.
         :param x: The key value to insert or the DirectAccessTable.Entry to add.
         :param satellite_data: The satellite data to include. Will not be used if x is DirectAccessTable.Entry.
         """
@@ -412,7 +412,7 @@ class DirectAccessTable:
 
     def direct_access_delete(self, x):
         """
-        Removes an entry from the DirectAccessTable.
+        Chapter 11: Removes an entry from the DirectAccessTable.
         :param x: The key value or the DirectAccessTable.Entry to remove.
         """
         if x is not DirectAccessTable.Entry:
@@ -436,7 +436,7 @@ class HashTable:
 
     def hash_division(self, k):
         """
-        Hash division is accomplished by taking the remainder of a division operation. If hash division is used
+        Chapter 11: Hash division is accomplished by taking the remainder of a division operation. If hash division is used
         the size of the collection should not be a power of 2. The reason being that if hash_table size equals 2^P then
         hash_division(k) will equal the lower p bits of k. Unless the keys passed in have an equally distributed pattern
         of lower p bits this will result in many collisions. Prime numbers that are not close to a power of 2 tend
@@ -448,7 +448,7 @@ class HashTable:
 
     def hash_multiplication(self, k):
         """
-        Hash multiplication is accomplished by plugging the key into a mathematical equation. This has the advantage of
+        Chapter 11: Hash multiplication is accomplished by plugging the key into a mathematical equation. This has the advantage of
         not placing enough emphasis on the size of the hash table.
         :param k: The key to hash.
         :return: The hash value.
@@ -461,7 +461,7 @@ class HashTable:
 
     def chained_hash_insert(self, x):
         """
-        Inserts a value into the linked list at a given hash table location.
+        Chapter 11: Inserts a value into the linked list at a given hash table location.
         :param x: The value to insert into the hash table.
         """
         linked_list = self.hash_table[hash(x.key)]
@@ -469,7 +469,7 @@ class HashTable:
 
     def chained_hash_search(self, k):
         """
-        Finds a value in the linked list at a given hash table location.
+        Chapter 11: Finds a value in the linked list at a given hash table location.
         :param k: The key to look up.
         :return: The element at the provided key location.
         """
@@ -478,7 +478,7 @@ class HashTable:
 
     def chained_hash_delete(self, x):
         """
-        Removes a value from the linked list at a given hash table location.
+        Chapter 11: Removes a value from the linked list at a given hash table location.
         :param x: The value to remove from the hash table.
         """
         linked_list = self.hash_table[hash(x.key)]
