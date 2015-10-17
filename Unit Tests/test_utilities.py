@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from utilities import *
 
+
 class TestRandom(TestCase):
     def assert_notequal_contains(self, source, value, printValue=False):
         """
@@ -40,6 +41,7 @@ class TestRandom(TestCase):
 
     def test_permute_by_cyclic(self):
         # Technically this could happen...
-        collection = [1, 2, 3, 4, 5, 6]
-        collection = permute_by_cyclic(collection)
-        self.assert_notequal_contains(collection, [1, 2, 3, 4, 5, 6])
+        old_collection = list(range(1, 51))
+        new_collection = permute_by_cyclic(old_collection)
+        self.assertListEqual(old_collection, list(range(1, 51)))
+        self.assert_notequal_contains(new_collection, old_collection)

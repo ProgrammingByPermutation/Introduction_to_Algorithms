@@ -198,7 +198,9 @@ class LinkedList:
         Chapter 10: Inserts the provided key into the head of the list.
         :param x: The key to insert into the collection.
         """
-        x = LinkedList.LinkedListNode(x, next_node=self.head)
+        if type(x) is not LinkedList.LinkedListNode:
+            x = LinkedList.LinkedListNode(x)
+        x.next_node = self.head
         if self.head is not None:
             self.head.prev_node = x
         self.head = x
@@ -210,7 +212,7 @@ class LinkedList:
         :param x: The key to remove.
         """
         # Not in the original code, just here for convenience.
-        if x is not LinkedList.LinkedListNode:
+        if type(x) is not LinkedList.LinkedListNode:
             x = self.list_search(x)
 
         if x.prev_node is not None:
@@ -309,7 +311,7 @@ class LinkedListSentinel:
         :param x: The key to remove.
         """
         # Not in the original code, just here for convenience.
-        if x is not LinkedListSentinel.LinkedListNode:
+        if type(x) is not LinkedListSentinel.LinkedListNode:
             x = self.list_search(x)
 
         x.prev_node.next_node = x.next_node
@@ -405,7 +407,7 @@ class DirectAccessTable:
         :param x: The key value to insert or the DirectAccessTable.Entry to add.
         :param satellite_data: The satellite data to include. Will not be used if x is DirectAccessTable.Entry.
         """
-        if x is not DirectAccessTable.Entry:
+        if type(x) is not DirectAccessTable.Entry:
             x = DirectAccessTable.Entry(x, satellite_data)
 
         self[x.key] = x
@@ -415,7 +417,7 @@ class DirectAccessTable:
         Chapter 11: Removes an entry from the DirectAccessTable.
         :param x: The key value or the DirectAccessTable.Entry to remove.
         """
-        if x is not DirectAccessTable.Entry:
+        if type(x) is not DirectAccessTable.Entry:
             x = DirectAccessTable.Entry(x)
 
         self[x.key] = None
@@ -431,8 +433,17 @@ class HashTable:
         """
         Initializes a new instance of the hash table class.
         :param size: The size of the hash table to create.
+        :param hash_function: The hash function to use. Should take arguments of "self" pointing to this object, "k"
+                              representing the key to calculate the hash for, and optionally "i" if an open address
+                              hash table is desired (i.e if calls will be made to the open address hash functions).
         """
         self.hash_table = [None] * size
+        self.A = 0.35459254522100925
+        self.c1 = None
+        self.c2 = None
+
+        # Since open address hashing is the hardest to setup we'll example using that here.
+        self.hash_function = lambda k, i: self.hash_double_hashing(k, i, self.hash_division, self.hash_multiplication)
 
     def hash_division(self, k):
         """
@@ -454,17 +465,79 @@ class HashTable:
         :return: The hash value.
         """
         if self.A is None:
-            # A should be between 0 and 1
+            # A should be between 0 and 1, value made up.
             self.A = random.random()
+            print('A: ' + str(self.A))
 
         return math.floor(len(self.hash_table) * ((k * self.A) % 1))
+
+    def hash_linear_probing(self, k, i, hash_function):
+        """
+        Performs linear probing for a hash. Linear probing is a technique for dealing with collisions open addressing.
+        It allows us to specify an arbitrary hashing function and offset its value linearly by an index. Basically we
+        take the hash provided by the passed in algorithm, add the index to its output, and then subsequently wrap the
+        output by the length of the hash_table. The main issue with this approach is "primary clustering" where
+        collision resolutions cause blocks of data to form which causes search times to increase.
+        :param k: The key to probe for.
+        :param i: The offset index.
+        :param hash_function: The hash function.
+        :return: The hash value.
+        """
+        return (hash_function(k) + i) % len(self.hash_table)
+
+    def hash_quadratic_probing(self, k, i, hash_function):
+        """
+        Chapter 11: Performs quadratic probing for a hash. Quadratic probing is a technique for dealing with collisions open
+        addressing. It allows us to specify an arbitrary hashing function and offset its value quadratically based off
+        of an index. Basically we take the hash provided by the passed in algorithm, give it a quadratic offset, and
+        then subsequently wrap the output by the length of the hash_table. The main issue with this approach is
+        "secondary clustering" where collision resolutions follow the same chain of values. When the hash table is more
+        than half full it can result in preventing an insert. Following the logic of a quadratic insert, no chains can
+        exceed (hash_table length / 2).
+        :param k: The key to probe for.
+        :param i: The offset index.
+        :param hash_function: The hash function.
+        :return: The hash value.
+        """
+        if self.c1 is None:
+            # A should greater than 0, value made up.
+            self.c1 = random.randint(1, len(self.hash_table))
+
+        if self.c2 is None:
+            # A should greater than 0, value made up.
+            self.c2 = random.randint(1, len(self.hash_table))
+
+        return (hash_function(k) + (self.c1 * i) + (self.c2 * (i ** 2))) % len(self.hash_table)
+
+    def hash_double_hashing(self, k, i, hash_function1, hash_function2):
+        """
+        Chapter 11: Implements double hashing. Double hashing uses two hash functions that should be complementary. Ideally,
+        hash_function1 should be relatively prime for all values of k and hash_function2 should both not share many
+        hash values with hash_function1 and not hash to zero.
+        :param k: The key to probe for.
+        :param i: The offset index.
+        :param hash_function1: The first hash function.
+        :param hash_function2: The second hash function.
+        :return: The hash value.
+        """
+        return (hash_function1(k) + (i * hash_function2(k))) % len(self.hash_table)
 
     def chained_hash_insert(self, x):
         """
         Chapter 11: Inserts a value into the linked list at a given hash table location.
         :param x: The value to insert into the hash table.
         """
-        linked_list = self.hash_table[hash(x.key)]
+        if type(x) is not LinkedList.LinkedListNode:
+            x = LinkedList.LinkedListNode(x)
+
+        hash = self.hash_function(x.key)
+        linked_list = self.hash_table[hash]
+        if type(linked_list) is not LinkedList:
+            curr_value = linked_list
+            linked_list = LinkedList()
+            linked_list.list_insert(curr_value)
+            self.hash_table[hash] = linked_list
+
         linked_list.list_insert(x)
 
     def chained_hash_search(self, k):
@@ -473,7 +546,7 @@ class HashTable:
         :param k: The key to look up.
         :return: The element at the provided key location.
         """
-        linked_list = self.hash_table[hash(k)]
+        linked_list = self.hash_table[self.hash_function(k)]
         return linked_list.list_search(k)
 
     def chained_hash_delete(self, x):
@@ -481,5 +554,84 @@ class HashTable:
         Chapter 11: Removes a value from the linked list at a given hash table location.
         :param x: The value to remove from the hash table.
         """
-        linked_list = self.hash_table[hash(x.key)]
+        linked_list = self.hash_table[self.hash_function(x.key)]
         linked_list.list_delete(x)
+
+    def hash_chained_insert(self, k):
+        """
+        Chapter 11: Inserts a key into the hash table using chained collisions. It's guaranteed to handle collisions by
+        creating linked lists in the hash table entries with collisions. This uses more memory in the event of a
+        collision and causes increased search time for collided table entries but it also guarantees the insertion
+        of keys.
+        :param k: The key to insert.
+        :return: The hash of the new element.
+        """
+        j = self.hash_function(k)
+        if self.hash_table[j] is None:
+            self.hash_table[j] = k
+            return j
+        else:
+            k = LinkedList.LinkedListNode(k)
+            self.chained_hash_insert(k)
+            return j
+
+    def hash_chained_search(self, k):
+        """
+        Chapter 11: Searches for the given key in the hash table.
+        :param k: The key to search for.
+        :return: The hash of the found key in the table. None if not found.
+        """
+        j = self.hash_function(k)
+        if type(self.hash_table[j]) is LinkedList:
+            node = self.hash_table[j].head
+            while node is not None:
+                if node.key == k:
+                    return j
+                node = node.next_node
+            return None
+        elif self.hash_table[j] == k:
+            return j
+
+        return None
+
+    def hash_insert(self, k):
+        """
+        Chapter 11: Inserts a key into the hash table using open addressing. The principle of open addressing is simple. We simply
+        calculate a hash code using the key and an index. This ensures that if we get a collision we can simply
+        increment the index to find the next available location for the key. This algorithm works best when keys will
+        not be deleted from the hash table. It has the advantage of being faster and using less memory.
+        :param k: The key to insert.
+        :return: The hash of the new element.
+        """
+        i = 0
+        while True:
+            j = self.hash_function(k, i)
+            if self.hash_table[j] is None:
+                self.hash_table[j] = k
+                return j
+            else:
+                i += 1
+
+            if i == len(self.hash_table):
+                break
+
+        raise Exception("hash table overflow")
+
+    def hash_search(self, k):
+        """
+        Chapter 11: Searches for the given key in the hash table.
+        :param k: The key to search for.
+        :return: The hash of the found key in the table. None if not found.
+        """
+        i = 0
+        while True:
+            j = self.hash_function(k, i)
+            if self.hash_table[j] == k:
+                return j
+
+            i = i + 1
+
+            if self.hash_table[j] is None or i == len(self.hash_table):
+                break
+
+        return None

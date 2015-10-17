@@ -142,3 +142,65 @@ class TestLinkedListSentinel(TestCase):
                 node = node.next_node
 
         self.assertEqual(len(list), 0, "List not empty.")
+
+
+class TestHashTable(TestCase):
+    def test_hash_function_open_address_double_hash(self):
+        hash_table = HashTable(10)
+
+        answers = [None] * 10
+        for x in range(10, 20):
+            answers[x - 10] = hash_table.hash_insert(x)
+
+        print(answers)
+        for x in range(10, 20):
+            self.assertEqual(hash_table.hash_search(x), answers[x - 10])
+
+    def test_hash_function_chained_multiplication(self):
+        hash_table = HashTable(10)
+        hash_table.hash_function = hash_table.hash_multiplication
+
+        answers = [None] * 10
+        for x in range(1, 10):
+            answers[x] = hash_table.hash_chained_insert(x)
+
+        for x in range(1, 10):
+            self.assertEqual(hash_table.hash_chained_search(x), answers[x])
+
+    def test_hash_function_chained_division(self):
+        hash_table = HashTable(10)
+        hash_table.hash_function = hash_table.hash_division
+
+        answers = [None] * 10
+        for x in range(10, 20):
+            answers[x - 10] = hash_table.hash_chained_insert(x)
+
+        print(answers)
+        for x in range(10, 20):
+            self.assertEqual(hash_table.hash_chained_search(x), answers[x - 10])
+
+    def test_hash_function_linear_probing(self):
+        hash_table = HashTable(10)
+        hash_table.hash_function = lambda k, i: hash_table.hash_linear_probing(k, i, hash_table.hash_multiplication)
+
+        answers = [None] * 10
+        for x in range(10, 20):
+            answers[x - 10] = hash_table.hash_insert(x)
+
+        print(answers)
+        for x in range(10, 20):
+            self.assertEqual(hash_table.hash_search(x), answers[x - 10])
+
+    def test_hash_function_quadratic_probing(self):
+        # Quadratics are known to be unable to resolve collisions if more than half full, have to use 3x larger
+        # collection for a fair test.
+        hash_table = HashTable(30)
+        hash_table.hash_function = lambda k, i: hash_table.hash_quadratic_probing(k, i, hash_table.hash_multiplication)
+
+        answers = [None] * 10
+        for x in range(10, 20):
+            answers[x - 10] = hash_table.hash_insert(x)
+
+        print(answers)
+        for x in range(10, 20):
+            self.assertEqual(hash_table.hash_search(x), answers[x - 10])
