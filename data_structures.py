@@ -536,7 +536,137 @@ class BinarySearchTree(BinaryTreePointers):
         return y
 
 
-class RedBlackTree(BinaryTreePointers):
+class BinaryTreePointersSentinel:
+    """
+    Chapter 10: A representation of a tree using pointers. Each node has a pointer to a left child, a right child, and
+    its parent. Uses sentinels instead of None.
+    """
+
+    class TreeNode:
+        """
+        A tree node. If the parent node is None the node is assumed to be the root node.
+        """
+
+        def __init__(self, key, p=None, left=None, right=None, satellite=None):
+            """
+            Initializes a new instance of the TreeNode class.
+            :param key: The key value of the node.
+            :param p: The parent node.
+            :param left: The left child node.
+            :param right: The right child node.
+            """
+            self.p = p
+            self.left = left
+            self.right = right
+            self.key = key
+            self.satellite = satellite
+
+        def __str__(self):
+            return str(self.key)
+
+    def __init__(self):
+        self.root = None
+        self.sentinel = BinaryTreePointersSentinel.TreeNode(None)
+
+    def inorder_tree_walk(self, x, function=lambda x: print(x.key)):
+        """
+        Chapter 12: Walks the binary tree in ascending order.
+        :param x: The node to start the walk from.
+        :param x: The node to walk from.
+        :param function: The function to call for each node.
+        """
+        # Pre-conditions
+        if x == self.sentinel:
+            return
+
+        self.inorder_tree_walk(x.left)
+        function(x.key)
+        self.inorder_tree_walk(x.right)
+
+    def tree_search(self, x, k):
+        """
+        Chapter 12: Searches for a given key in the binary search tree.
+        :param x: The node to search from.
+        :param k: The key to search for.
+        :return: The tree node with the given key.
+        """
+        if x == self.sentinel or k == x.key:
+            return x
+
+        if k < x.key:
+            return self.tree_search(x.left, k)
+        else:
+            return self.tree_search(x.right, k)
+
+    def iterative_tree_search(self, x, k):
+        """
+        Chapter 12: Iteratively searches for the given key in a binary tree. Faster than tree_search.
+        :param x: The node to search from.
+        :param k: The key to search for.
+        :return: The tree node with the given key.
+        """
+        while x != self.sentinel and k != x.key:
+            if k < x.key:
+                x = x.left
+            else:
+                x = x.right
+
+        return x
+
+    def tree_minimum(self, x):
+        """
+        Chapter 12: Finds the minimum key value in the tree.
+        :param x: The node to search from.
+        :return: The node with the minimum key value in the tree.
+        """
+        while x.left != self.sentinel:
+            x = x.left
+
+        return x
+
+    def tree_maximum(self, x):
+        """
+        Chapter 12: Finds the maximum key value in the tree.
+        :param x: The node to search from.
+        :return: The node with the maxmimum key value in the tree.
+        """
+        while x.right != self.sentinel:
+            x = x.right
+
+        return x
+
+    def tree_successor(self, x):
+        """
+        Chapter 12: Finds the successor of a given node.
+        :param x: The node to find the successor of.
+        """
+        if x.right != self.sentinel:
+            return self.tree_minimum(x.right)
+
+        y = x.p
+        while y != self.sentinel and x == y.right:
+            x = y
+            y = y.p
+
+        return y
+
+    def tree_predecessor(self, x):
+        """
+        Chapter 12: Finds the predecessor of a given node.
+        :param x: The node to find the predecessor of.
+        """
+        if x.left != self.sentinel:
+            return self.tree_maximum(x.left)
+
+        y = x.p
+        while y != self.sentinel and x == y.left:
+            x = y
+            y = y.p
+
+        return y
+
+
+class RedBlackTree(BinaryTreePointersSentinel):
     """
     Chapter 13: A red black tree is a binary search tree that is balanced to guarantee that basic operations take logarithmic time.
     A red black tree satisfies the following constraints:
@@ -566,7 +696,7 @@ class RedBlackTree(BinaryTreePointers):
             self.color = None
 
     def __init__(self):
-        BinaryTreePointers.__init__(self)
+        BinaryTreePointersSentinel.__init__(self)
         self.sentinel = RedBlackTree.RedBlackNode(None)
         self.sentinel.color = RedBlackTree.Color.black
         self.root = self.sentinel
@@ -754,24 +884,34 @@ class RedBlackTree(BinaryTreePointers):
         return y
 
     def rb_delete_fixup(self, x):
+        """
+        Chapter 13: Fixes the tree after a delete operation.
+        :param x: The node that was removed.
+        """
         while x != self.root and x.color == RedBlackTree.Color.black:
             if x == x.p.left:
                 w = x.p.right
+                # Case 1: x's sibling w is red. Switching the color of w and x.p and then performing a left rotation
+                # allows us to fix this and switch to case 2, 3, or 4.
                 if w.color == RedBlackTree.Color.red:
                     w.color = RedBlackTree.Color.black
                     x.p.color = RedBlackTree.Color.red
                     self.left_rotate(x.p)
                     w = x.p.right
 
+                # Case 2: x's sibling is black and both of w's children are black
                 if w.left.color == RedBlackTree.Color.black and w.right.color == RedBlackTree.Color.black:
                     w.color = RedBlackTree.Color.red
                     x = x.p
                 else:
+                    # Case 3: x's sibling w is black, w's left child is red, and w's right child is black
                     if w.right.color == RedBlackTree.Color.black:
                         w.left.color = RedBlackTree.Color.black
                         w.color = RedBlackTree.Color.red
                         self.right_rotate(w)
                         w = x.p.right
+
+                    # Case 4: x's sibling w is black and w's right child is red
                     w.color = x.p.color
                     x.p.color = RedBlackTree.Color.black
                     w.right.color = RedBlackTree.Color.black
@@ -802,57 +942,202 @@ class RedBlackTree(BinaryTreePointers):
 
         x.color = RedBlackTree.Color.black
 
-    def tree_successor(self, x):
-        """
-        Chapter 12: Finds the successor of a given node.
-        :param x: The node to find the successor of.
-        """
-        if x.right != self.sentinel:
-            return self.tree_minimum(x.right)
 
-        y = x.p
-        while y != self.sentinel and x == y.right:
-            x = y
+class OrderStatisticTree(RedBlackTree):
+    class TreeNode(RedBlackTree.RedBlackNode):
+        def __init__(self, key):
+            """
+            Initializes a new instance of the TreeNode class.
+            The difference between this TreeNode and the RedBlackTree RedBlackNode is that this
+            includes a size. The size is total number of elements in the left and right subtrees plus 1
+            to include this node.
+            """
+            RedBlackTree.RedBlackNode.__init__(self, key)
+            self.size = 0
+
+    def __init__(self):
+        RedBlackTree.__init__(self)
+        self.sentinel = OrderStatisticTree.TreeNode(None)
+        self.sentinel.color = RedBlackTree.Color.black
+        self.root = self.sentinel
+
+    def os_select(self, x, i):
+        """
+        Chapter 14: Selects the i'th smallest element in the passed in sub-tree.
+        :param x: The root node of the sub-tree.
+        :param i: The i-th smallest element to find.
+        :return: The i-th smallest element node.
+        """
+        # Since size = left.size + right.size + 1
+        # r is the rank of x within the subtree rooted at x.
+        r = x.left.size + 1
+
+        if i == r:
+            return x
+        elif i < r:
+            return self.os_select(x.left, i)
+        else:
+            return self.os_select(x.right, i - r)
+
+    def os_rank(self, x):
+        """
+        Chapter 14: Determines the rank of a passed in node. The rank is the linear order of the tree in the set of
+        values that make up the tree. (i.e it's position in sorted order ascending)
+        :param x: The node to measure the rank of.
+        :returns: The rank of the node.
+        """
+        # Determining the rank is basically an in order walk of the tree plus 1 for x itself.
+        r = x.left.size + 1
+        y = x
+        while y != self.root:
+            if y == y.p.right:
+                r = r + y.p.left.size + 1
             y = y.p
+        return r
+
+    def rb_insert(self, z):
+        """
+        Chapter 13: Inserts into the red black tree.
+        :param z: The node or key to insert.
+        """
+        if type(z) is not RedBlackTree.TreeNode:
+            z = OrderStatisticTree.TreeNode(z)
+            z.size = 1
+
+        y = self.sentinel
+        x = self.root
+
+        while x != self.sentinel:
+            x.size += 1
+            y = x
+            if z.key < x.key:
+                x = x.left
+            else:
+                x = x.right
+
+        z.p = y
+        if y == self.sentinel:
+            self.root = z
+        else:
+            if z.key < y.key:
+                y.left = z
+            else:
+                y.right = z
+
+        z.left = self.sentinel
+        z.right = self.sentinel
+        z.color = RedBlackTree.Color.red
+        self.rb_insert_fixup(z)
+
+    def rb_delete(self, z):
+        """
+        Chapter 13: Removes a node from the tree.
+        :param z: The node to remove.
+        """
+        if z.left == self.sentinel or z.right == self.sentinel:
+            y = z
+        else:
+            y = self.tree_successor(z)
+
+        # Before splice out node y, decrement the sizes up the tree.
+        node = y.p
+        while node != self.sentinel:
+            node.size -= 1
+            node = node.p
+
+        if y.left != self.sentinel:
+            x = y.left
+        else:
+            x = y.right
+
+        x.p = y.p
+
+        if y.p == self.sentinel:
+            self.root = x
+        else:
+            if y == y.p.left:
+                y.p.left = x
+            else:
+                y.p.right = x
+
+        if y != z:
+            z.key = y.key
+            z.satellite = y.satellite
+
+        if y.color == RedBlackTree.Color.black:
+            self.rb_delete_fixup(x)
 
         return y
 
-    def tree_predecessor(self, x):
+    def left_rotate(self, x):
         """
-        Chapter 12: Finds the predecessor of a given node.
-        :param x: The node to find the predecessor of.
+        Chapter 13: Performs a left rotation on the passed in node. Left rotations assume that the right child (y) is not the
+        sentinel value. A left rotation pivots the around the link from x to y. It makes y the new root of the
+        subtree, with x as y's left and y's left child as x's right child.
+        :param x: The node to rotate.
         """
-        if x.left != self.sentinel:
-            return self.tree_maximum(x.left)
+        # BEGIN RED BLACK TREE CODE FOR LEFT ROTATION
+        # Set y
+        y = x.right
 
-        y = x.p
-        while y != self.sentinel and x == y.left:
-            x = y
-            y = y.p
+        # Turn y's left subtree into x's right subtree
+        x.right = y.left
 
-        return y
+        if y.left != self.sentinel:
+            y.left.p = x
 
-    def tree_minimum(self, x):
+        # Link x's parent to y
+        y.p = x.p
+        if x.p == self.sentinel:
+            self.root = y
+        else:
+            if x == x.p.left:
+                x.p.left = y
+            else:
+                x.p.right = y
+
+        # Put x on y's left
+        y.left = x
+        x.p = y
+        # END RED BLACK TREE CODE FOR LEFT ROTATION
+
+        y.size = x.size
+        x.size = x.left.size + x.right.size + 1
+
+    def right_rotate(self, x):
         """
-        Chapter 12: Finds the minimum key value in the tree.
-        :param x: The node to search from.
-        :return: The node with the minimum key value in the tree.
+        Chapter 13: Performs a right rotation on the passed in node. Left rotations assume that the left child (y) is
+        not the sentinel value. A right rotation pivots the around the link from x to y. It makes y the new root of the
+        subtree, with x as y's right and y's right child as x's left child.
+        :param x: The node to rotate.
         """
-        while x.left != self.sentinel:
-            x = x.left
+        # BEGIN RED BLACK TREE CODE FOR RIGHT ROTATION
+        # Set y
+        y = x.left
 
-        return x
+        # Turn y's left subtree into x's right subtree
+        x.left = y.right
 
-    def tree_maximum(self, x):
-        """
-        Chapter 12: Finds the maximum key value in the tree.
-        :param x: The node to search from.
-        :return: The node with the maxmimum key value in the tree.
-        """
-        while x.right != self.sentinel:
-            x = x.right
+        if y.right != self.sentinel:
+            y.right.p = x
 
-        return x
+        # Link x's parent to y
+        y.p = x.p
+        if x.p == self.sentinel:
+            self.root = y
+        else:
+            if x == x.p.right:
+                x.p.right = y
+            else:
+                x.p.left = y
+
+        # Put x on y's left
+        y.right = x
+        x.p = y
+        # END RED BLACK TREE CODE FOR RIGHT ROTATION
+
+        y.size = x.size
+        x.size = x.right.size + x.left.size + 1
 
 
 class RootedTree:
