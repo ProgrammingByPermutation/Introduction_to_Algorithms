@@ -292,3 +292,125 @@ class TestBinarySearchTree(TestCase):
         tree.tree_delete(tree.root.left)
         self.assertEqual(tree.root.left.key, 6)
         self.assertEqual(tree.root.left.right.left.left.key, 7)
+
+
+class TestRedBlackTree(TestCase):
+    @staticmethod
+    def set_parents_and_sentinel(x, tree):
+        """
+        Lazy method for setting the parents and sentinel values for manually constructed trees
+        :param x: The node to start traversing.
+        :param tree: The tree.
+        """
+        if x.left != None:
+            x.left.p = x
+            TestRedBlackTree.set_parents_and_sentinel(x.left, tree)
+        else:
+            x.left = tree.sentinel
+
+        if x.right != None:
+            x.right.p = x
+            TestRedBlackTree.set_parents_and_sentinel(x.right, tree)
+        else:
+            x.right = tree.sentinel
+
+    def test_rotate(self):
+        tree = RedBlackTree()
+        tree.root = RedBlackTree.RedBlackNode(7)
+        tree.root.p = tree.sentinel
+        tree.root.left = RedBlackTree.RedBlackNode(4)
+        tree.root.left.left = RedBlackTree.RedBlackNode(3)
+        tree.root.left.right = RedBlackTree.RedBlackNode(6)
+        tree.root.left.left.left = RedBlackTree.RedBlackNode(2)
+        tree.root.right = RedBlackTree.RedBlackNode(11)
+        tree.root.right.left = RedBlackTree.RedBlackNode(9)
+        tree.root.right.right = RedBlackTree.RedBlackNode(18)
+        tree.root.right.right.left = RedBlackTree.RedBlackNode(14)
+        tree.root.right.right.left.left = RedBlackTree.RedBlackNode(12)
+        tree.root.right.right.left.right = RedBlackTree.RedBlackNode(17)
+        tree.root.right.right.right = RedBlackTree.RedBlackNode(19)
+        tree.root.right.right.right.right = RedBlackTree.RedBlackNode(22)
+        tree.root.right.right.right.left = RedBlackTree.RedBlackNode(20)
+
+        # Lazy
+        TestRedBlackTree.set_parents_and_sentinel(tree.root, tree)
+
+        # Rotate
+        tree.left_rotate(tree.root.right)
+
+        # Check
+        self.assertEqual(tree.root.right.key, 18)
+        self.assertEqual(tree.root.right.right.key, 19)
+        self.assertEqual(tree.root.right.left.key, 11)
+        self.assertEqual(tree.root.right.left.left.key, 9)
+        self.assertEqual(tree.root.right.left.right.key, 14)
+        self.assertEqual(tree.root.right.left.right.left.key, 12)
+        self.assertEqual(tree.root.right.left.right.right.key, 17)
+
+        # Rotate back
+        tree.right_rotate(tree.root.right)
+
+        self.assertEqual(tree.root.right.key, 11)
+        self.assertEqual(tree.root.right.left.key, 9)
+        self.assertEqual(tree.root.right.right.key, 18)
+        self.assertEqual(tree.root.right.right.right.key, 19)
+        self.assertEqual(tree.root.right.right.left.key, 14)
+        self.assertEqual(tree.root.right.right.left.left.key, 12)
+        self.assertEqual(tree.root.right.right.left.right.key, 17)
+
+    def test_insert(self):
+        tree = RedBlackTree()
+        tree.root = RedBlackTree.TreeNode(11)
+        tree.root.p = tree.sentinel
+        tree.root.color = RedBlackTree.Color.black
+        tree.root.left = RedBlackTree.TreeNode(2)
+        tree.root.left.color = RedBlackTree.Color.red
+        tree.root.left.left = RedBlackTree.TreeNode(1)
+        tree.root.left.left.color = RedBlackTree.Color.black
+        tree.root.left.right = RedBlackTree.TreeNode(7)
+        tree.root.left.right.color = RedBlackTree.Color.black
+        tree.root.left.right.left = RedBlackTree.TreeNode(5)
+        tree.root.left.right.left.color = RedBlackTree.Color.red
+        tree.root.left.right.right = RedBlackTree.TreeNode(8)
+        tree.root.left.right.right.color = RedBlackTree.Color.red
+        tree.root.right = RedBlackTree.TreeNode(14)
+        tree.root.right.color = RedBlackTree.Color.black
+        tree.root.right.right = RedBlackTree.TreeNode(15)
+        tree.root.right.right.color = RedBlackTree.Color.red
+
+        TestRedBlackTree.set_parents_and_sentinel(tree.root, tree)
+
+        # Insert
+        tree.rb_insert(4)
+
+        # Verify
+        self.assertEqual(tree.root.key, 7)
+        self.assertEqual(tree.root.left.key, 2)
+        self.assertEqual(tree.root.left.left.key, 1)
+        self.assertEqual(tree.root.left.right.key, 5)
+        self.assertEqual(tree.root.left.right.left.key, 4)
+        self.assertEqual(tree.root.right.key, 11)
+        self.assertEqual(tree.root.right.left.key, 8)
+        self.assertEqual(tree.root.right.right.key, 14)
+        self.assertEqual(tree.root.right.right.right.key, 15)
+
+        self.assertEqual(tree.root.left.left.left, tree.sentinel)
+        self.assertEqual(tree.root.left.left.right, tree.sentinel)
+        self.assertEqual(tree.root.left.right.right, tree.sentinel)
+        self.assertEqual(tree.root.left.right.left.left, tree.sentinel)
+        self.assertEqual(tree.root.left.right.left.right, tree.sentinel)
+        self.assertEqual(tree.root.right.left.left, tree.sentinel)
+        self.assertEqual(tree.root.right.left.right, tree.sentinel)
+        self.assertEqual(tree.root.right.right.left, tree.sentinel)
+        self.assertEqual(tree.root.right.right.right.left, tree.sentinel)
+        self.assertEqual(tree.root.right.right.right.right, tree.sentinel)
+
+        self.assertEqual(tree.root.color, RedBlackTree.Color.black)
+        self.assertEqual(tree.root.left.color, RedBlackTree.Color.red)
+        self.assertEqual(tree.root.left.left.color, RedBlackTree.Color.black)
+        self.assertEqual(tree.root.left.right.color, RedBlackTree.Color.black)
+        self.assertEqual(tree.root.left.right.left.color, RedBlackTree.Color.red)
+        self.assertEqual(tree.root.right.color, RedBlackTree.Color.red)
+        self.assertEqual(tree.root.right.left.color, RedBlackTree.Color.black)
+        self.assertEqual(tree.root.right.right.color, RedBlackTree.Color.black)
+        self.assertEqual(tree.root.right.right.right.color, RedBlackTree.Color.red)

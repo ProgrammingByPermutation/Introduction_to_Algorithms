@@ -1,5 +1,6 @@
 import random
 import math
+import enum
 
 
 class OneBasedList:
@@ -533,6 +534,185 @@ class BinarySearchTree(BinaryTreePointers):
             z.satellite = y.satellite
 
         return y
+
+
+class RedBlackTree(BinaryTreePointers):
+    """
+    Chapter 13: A red black tree is a binary search tree that is balanced to guarantee that basic operations take logarithmic time.
+    A red black tree satisfies the following constraints:
+    1. Every node is either red or black.
+    2. The root is black.
+    3. Every leaf is black.
+    4. If a node is red, then both its children are black.
+    5. For each node, all paths from the node to descendant leaves contain the same number of black nodes.
+    """
+
+    class Color(enum.Enum):
+        """
+        Chapter 13: The color of the nodes.
+        1. Red nodes have two black children.
+        2. Black nodes are everything else.
+        """
+        red = 1
+        black = 2
+
+    class RedBlackNode(BinaryTreePointers.TreeNode):
+        """
+        Chapter 13: Like a binary tree node except it includes color.
+        """
+
+        def __init__(self, key):
+            RedBlackTree.TreeNode.__init__(self, key)
+            self.color = None
+
+    def __init__(self):
+        BinaryTreePointers.__init__(self)
+        self.sentinel = RedBlackTree.RedBlackNode(None)
+        self.sentinel.color = RedBlackTree.Color.black
+        self.root = self.sentinel
+
+    def black_height(self, x):
+        """
+        Chapter 13: The number of black nodes on the path of but not including x.
+        :param x: The node to measure from.
+        :return: The number of black nodes on the path.
+        """
+        i = 0
+        node = x.p
+        while node != self.sentinel:
+            if node.color == RedBlackTree.Color.black:
+                i += 1
+
+        return i
+
+    def left_rotate(self, x):
+        """
+        Chapter 13: Performs a left rotation on the passed in node. Left rotations assume that the right child (y) is not the
+        sentinel value. A left rotation pivots the around the link from x to y. It makes y the new root of the
+        subtree, with x as y's left and y's left child as x's right child.
+        :param x: The node to rotate.
+        """
+        # Set y
+        y = x.right
+
+        # Turn y's left subtree into x's right subtree
+        x.right = y.left
+
+        if y.left != self.sentinel:
+            y.left.p = x
+
+        # Link x's parent to y
+        y.p = x.p
+        if x.p == self.sentinel:
+            self.root = y
+        else:
+            if x == x.p.left:
+                x.p.left = y
+            else:
+                x.p.right = y
+
+        # Put x on y's left
+        y.left = x
+        x.p = y
+
+    def right_rotate(self, x):
+        """
+        Chapter 13: Performs a right rotation on the passed in node. Left rotations assume that the left child (y) is
+        not the sentinel value. A right rotation pivots the around the link from x to y. It makes y the new root of the
+        subtree, with x as y's right and y's right child as x's left child.
+        :param x: The node to rotate.
+        """
+        # Set y
+        y = x.left
+
+        # Turn y's left subtree into x's right subtree
+        x.left = y.right
+
+        if y.right != self.sentinel:
+            y.right.p = x
+
+        # Link x's parent to y
+        y.p = x.p
+        if x.p == self.sentinel:
+            self.root = y
+        else:
+            if x == x.p.right:
+                x.p.right = y
+            else:
+                x.p.left = y
+
+        # Put x on y's left
+        y.right = x
+        x.p = y
+
+    def rb_insert(self, z):
+        """
+        Inserts into the red black tree.
+        :param z: The node or key to insert.
+        """
+        if type(z) is not RedBlackTree.TreeNode:
+            z = RedBlackTree.TreeNode(z)
+
+        y = self.sentinel
+        x = self.root
+
+        while x != self.sentinel:
+            y = x
+            if z.key < x.key:
+                x = x.left
+            else:
+                x = x.right
+
+        z.p = y
+        if y == self.sentinel:
+            self.root = z
+        else:
+            if z.key < y.key:
+                y.left = z
+            else:
+                y.right = z
+
+        z.left = self.sentinel
+        z.right = self.sentinel
+        z.color = RedBlackTree.Color.red
+        self.rb_insert_fixup(z)
+
+    def rb_insert_fixup(self, z):
+        """
+        Fixes the balanced tree after an insert operation.
+        :param z: The inserted node.
+        """
+        while z.p.color == RedBlackTree.Color.red:
+            if z.p == z.p.p.left:
+                y = z.p.p.right
+                if y.color == RedBlackTree.Color.red:
+                    z.p.color = RedBlackTree.Color.black
+                    y.color = RedBlackTree.Color.black
+                    z.p.p.color = RedBlackTree.Color.red
+                    z = z.p.p
+                else:
+                    if z == z.p.right:
+                        z = z.p
+                        self.left_rotate(z)
+                    z.p.color = RedBlackTree.Color.black
+                    z.p.p.color = RedBlackTree.Color.red
+                    self.right_rotate(z.p.p)
+            else:
+                y = z.p.p.left
+                if y.color == RedBlackTree.Color.red:
+                    z.p.color = RedBlackTree.Color.black
+                    y.color = RedBlackTree.Color.black
+                    z.p.p.color = RedBlackTree.Color.red
+                    z = z.p.p
+                else:
+                    if z == z.p.left:
+                        z = z.p
+                        self.right_rotate(z)
+                    z.p.color = RedBlackTree.Color.black
+                    z.p.p.color = RedBlackTree.Color.red
+                    self.left_rotate(z.p.p)
+
+        self.root.color = RedBlackTree.Color.black
 
 
 class RootedTree:
