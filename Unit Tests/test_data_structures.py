@@ -414,3 +414,36 @@ class TestRedBlackTree(TestCase):
         self.assertEqual(tree.root.right.left.color, RedBlackTree.Color.black)
         self.assertEqual(tree.root.right.right.color, RedBlackTree.Color.black)
         self.assertEqual(tree.root.right.right.right.color, RedBlackTree.Color.red)
+
+    def test_remove(self):
+        tree = RedBlackTree()
+        tree.root = RedBlackTree.TreeNode(11)
+        tree.root.p = tree.sentinel
+        tree.root.color = RedBlackTree.Color.black
+        tree.root.left = RedBlackTree.TreeNode(2)
+        tree.root.left.color = RedBlackTree.Color.red
+        tree.root.left.left = RedBlackTree.TreeNode(1)
+        tree.root.left.left.color = RedBlackTree.Color.black
+        tree.root.left.right = RedBlackTree.TreeNode(7)
+        tree.root.left.right.color = RedBlackTree.Color.black
+        tree.root.left.right.left = RedBlackTree.TreeNode(5)
+        tree.root.left.right.left.color = RedBlackTree.Color.red
+        tree.root.left.right.right = RedBlackTree.TreeNode(8)
+        tree.root.left.right.right.color = RedBlackTree.Color.red
+        tree.root.right = RedBlackTree.TreeNode(14)
+        tree.root.right.color = RedBlackTree.Color.black
+        tree.root.right.right = RedBlackTree.TreeNode(15)
+        tree.root.right.right.color = RedBlackTree.Color.red
+
+        TestRedBlackTree.set_parents_and_sentinel(tree.root, tree)
+
+        tree.rb_delete(tree.root.left.right.left)
+
+        self.assertEqual(tree.root.key, 11)
+        self.assertEqual(tree.root.left.key, 2)
+        self.assertEqual(tree.root.left.left.key, 1)
+        self.assertEqual(tree.root.left.right.key, 7)
+        self.assertEqual(tree.root.left.right.left, tree.sentinel)
+        self.assertEqual(tree.root.left.right.right.key, 8)
+        self.assertEqual(tree.root.right.key, 14)
+        self.assertEqual(tree.root.right.right.key, 15)

@@ -361,6 +361,83 @@ class BinarySearchTree(BinaryTreePointers):
         BinaryTreePointers.__init__(self)
         self.root = None
 
+    def tree_insert(self, z):
+        """
+        Chapter 12: Inserts the given node into the tree.
+        :param z: The node or value to add to the tree.
+        """
+        if type(z) is not BinaryTreePointers.TreeNode:
+            z = BinaryTreePointers.TreeNode(z)
+
+        z.left = None
+        z.right = None
+
+        y = None
+        x = self.root
+
+        # Find the correct place in the tree for the node given the rules for a binary tree.
+        # Save off the parent
+        while x is not None:
+            y = x
+            if z.key < x.key:
+                x = x.left
+            else:
+                x = x.right
+
+        # Determine if the new node is the root of the tree otherwise set the parent and link the two
+        # nodes together.
+        z.p = y
+        if y is None:
+            self.root = z
+        else:
+            if z.key < y.key:
+                y.left = z
+            else:
+                y.right = z
+
+    def tree_delete(self, z):
+        """
+        Chapter 12: Removes a node from the tree. This is trickier than inserting. You'll be in one of three situations that will
+        be handled accordingly:
+        1. z has no children: Just remove z by disconnecting it from the parent.
+        2. z has one child: Splice out z by connecting its child to z's position in its parent.
+        3. z has two children: Splice out its successor (y) which will have at most one child and then replace z's key
+                               and satellite data with y's key and satellite data.
+        :param z: The node to remove.
+        :return: The removed node.
+        """
+        # Determine the node to splice out. y is either the node passed in or the successor of the node passed in.
+        if z.left is None or z.right is None:
+            y = z
+        else:
+            y = self.tree_successor(z)
+
+        # Set x to the child of y if one exists.
+        if y.left is not None:
+            x = y.left
+        else:
+            x = y.right
+
+        # Splice out node y
+        if x is not None:
+            x.p = y.p
+
+        if y.p is None:
+            self.root = x
+        else:
+            if y == y.p.left:
+                y.p.left = x
+            else:
+                y.p.right = x
+
+        # If y was the successor of z (i.e if z had two children when passed in) move y's data to z
+        if y != z:
+            # Copy all the data, not just the key
+            z.key = y.key
+            z.satellite = y.satellite
+
+        return y
+
     def inorder_tree_walk(self, x, function=lambda x: print(x.key)):
         """
         Chapter 12: Walks the binary tree in ascending order.
@@ -455,83 +532,6 @@ class BinarySearchTree(BinaryTreePointers):
         while y is not None and x == y.left:
             x = y
             y = y.p
-
-        return y
-
-    def tree_insert(self, z):
-        """
-        Chapter 12: Inserts the given node into the tree.
-        :param z: The node or value to add to the tree.
-        """
-        if type(z) is not BinaryTreePointers.TreeNode:
-            z = BinaryTreePointers.TreeNode(z)
-
-        z.left = None
-        z.right = None
-
-        y = None
-        x = self.root
-
-        # Find the correct place in the tree for the node given the rules for a binary tree.
-        # Save off the parent
-        while x is not None:
-            y = x
-            if z.key < x.key:
-                x = x.left
-            else:
-                x = x.right
-
-        # Determine if the new node is the root of the tree otherwise set the parent and link the two
-        # nodes together.
-        z.p = y
-        if y is None:
-            self.root = z
-        else:
-            if z.key < y.key:
-                y.left = z
-            else:
-                y.right = z
-
-    def tree_delete(self, z):
-        """
-        Chapter 12: Removes a node from the tree. This is trickier than inserting. You'll be in one of three situations that will
-        be handled accordingly:
-        1. z has no children: Just remove z by disconnecting it from the parent.
-        2. z has one child: Splice out z by connecting its child to z's position in its parent.
-        3. z has two children: Splice out its successor (y) which will have at most one child and then replace z's key
-                               and satellite data with y's key and satellite data.
-        :param z: The node to remove.
-        :return: The removed node.
-        """
-        # Determine the node to splice out. y is either the node passed in or the successor of the node passed in.
-        if z.left is None or z.right is None:
-            y = z
-        else:
-            y = self.tree_successor(z)
-
-        # Set x to the child of y if one exists.
-        if y.left is not None:
-            x = y.left
-        else:
-            x = y.right
-
-        # Splice out node y
-        if x is not None:
-            x.p = y.p
-
-        if y.p is None:
-            self.root = x
-        else:
-            if y == y.p.left:
-                y.p.left = x
-            else:
-                y.p.right = x
-
-        # If y was the successor of z (i.e if z had two children when passed in) move y's data to z
-        if y != z:
-            # Copy all the data, not just the key
-            z.key = y.key
-            z.satellite = y.satellite
 
         return y
 
@@ -685,15 +685,20 @@ class RedBlackTree(BinaryTreePointers):
         while z.p.color == RedBlackTree.Color.red:
             if z.p == z.p.p.left:
                 y = z.p.p.right
+
+                # Case 1: If z's uncle y is red
                 if y.color == RedBlackTree.Color.red:
                     z.p.color = RedBlackTree.Color.black
                     y.color = RedBlackTree.Color.black
                     z.p.p.color = RedBlackTree.Color.red
                     z = z.p.p
                 else:
+                    # Case 2: If z's uncle y is black and z is a right child, perform a left rotation to make it Case 3
                     if z == z.p.right:
                         z = z.p
                         self.left_rotate(z)
+
+                    # Case 3: If z's uncle y is black and z is a left child
                     z.p.color = RedBlackTree.Color.black
                     z.p.p.color = RedBlackTree.Color.red
                     self.right_rotate(z.p.p)
@@ -713,6 +718,141 @@ class RedBlackTree(BinaryTreePointers):
                     self.left_rotate(z.p.p)
 
         self.root.color = RedBlackTree.Color.black
+
+    def rb_delete(self, z):
+        """
+        Chapter 13: Removes a node from the tree.
+        :param z: The node to remove.
+        """
+        if z.left == self.sentinel or z.right == self.sentinel:
+            y = z
+        else:
+            y = self.tree_successor(z)
+
+        if y.left != self.sentinel:
+            x = y.left
+        else:
+            x = y.right
+
+        x.p = y.p
+
+        if y.p == self.sentinel:
+            self.root = x
+        else:
+            if y == y.p.left:
+                y.p.left = x
+            else:
+                y.p.right = x
+
+        if y != z:
+            z.key = y.key
+            z.satellite = y.satellite
+
+        if y.color == RedBlackTree.Color.black:
+            self.rb_delete_fixup(x)
+
+        return y
+
+    def rb_delete_fixup(self, x):
+        while x != self.root and x.color == RedBlackTree.Color.black:
+            if x == x.p.left:
+                w = x.p.right
+                if w.color == RedBlackTree.Color.red:
+                    w.color = RedBlackTree.Color.black
+                    x.p.color = RedBlackTree.Color.red
+                    self.left_rotate(x.p)
+                    w = x.p.right
+
+                if w.left.color == RedBlackTree.Color.black and w.right.color == RedBlackTree.Color.black:
+                    w.color = RedBlackTree.Color.red
+                    x = x.p
+                else:
+                    if w.right.color == RedBlackTree.Color.black:
+                        w.left.color = RedBlackTree.Color.black
+                        w.color = RedBlackTree.Color.red
+                        self.right_rotate(w)
+                        w = x.p.right
+                    w.color = x.p.color
+                    x.p.color = RedBlackTree.Color.black
+                    w.right.color = RedBlackTree.Color.black
+                    self.left_rotate(x.p)
+                    x = self.root
+            else:
+                w = x.p.left
+                if w.color == RedBlackTree.Color.red:
+                    w.color = RedBlackTree.Color.black
+                    x.p.color = RedBlackTree.Color.red
+                    self.right_rotate(x.p)
+                    w = x.p.left
+
+                if w.right.color == RedBlackTree.Color.black and w.left.color == RedBlackTree.Color.black:
+                    w.color = RedBlackTree.Color.red
+                    x = x.p
+                else:
+                    if w.left.color == RedBlackTree.Color.black:
+                        w.right.color = RedBlackTree.Color.black
+                        w.color = RedBlackTree.Color.red
+                        self.left_rotate(w)
+                        w = x.p.left
+                    w.color = x.p.color
+                    x.p.color = RedBlackTree.Color.black
+                    w.left.color = RedBlackTree.Color.black
+                    self.right_rotate(x.p)
+                    x = self.root
+
+        x.color = RedBlackTree.Color.black
+
+    def tree_successor(self, x):
+        """
+        Chapter 12: Finds the successor of a given node.
+        :param x: The node to find the successor of.
+        """
+        if x.right != self.sentinel:
+            return self.tree_minimum(x.right)
+
+        y = x.p
+        while y != self.sentinel and x == y.right:
+            x = y
+            y = y.p
+
+        return y
+
+    def tree_predecessor(self, x):
+        """
+        Chapter 12: Finds the predecessor of a given node.
+        :param x: The node to find the predecessor of.
+        """
+        if x.left != self.sentinel:
+            return self.tree_maximum(x.left)
+
+        y = x.p
+        while y != self.sentinel and x == y.left:
+            x = y
+            y = y.p
+
+        return y
+
+    def tree_minimum(self, x):
+        """
+        Chapter 12: Finds the minimum key value in the tree.
+        :param x: The node to search from.
+        :return: The node with the minimum key value in the tree.
+        """
+        while x.left != self.sentinel:
+            x = x.left
+
+        return x
+
+    def tree_maximum(self, x):
+        """
+        Chapter 12: Finds the maximum key value in the tree.
+        :param x: The node to search from.
+        :return: The node with the maxmimum key value in the tree.
+        """
+        while x.right != self.sentinel:
+            x = x.right
+
+        return x
 
 
 class RootedTree:
