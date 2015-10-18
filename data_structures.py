@@ -647,7 +647,7 @@ class RedBlackTree(BinaryTreePointers):
 
     def rb_insert(self, z):
         """
-        Inserts into the red black tree.
+        Chapter 13: Inserts into the red black tree.
         :param z: The node or key to insert.
         """
         if type(z) is not RedBlackTree.TreeNode:
@@ -679,7 +679,7 @@ class RedBlackTree(BinaryTreePointers):
 
     def rb_insert_fixup(self, z):
         """
-        Fixes the balanced tree after an insert operation.
+        Chapter 13: Fixes the balanced tree after an insert operation.
         :param z: The inserted node.
         """
         while z.p.color == RedBlackTree.Color.red:
