@@ -686,18 +686,18 @@ class RedBlackTree(BinaryTreePointersSentinel):
         red = 1
         black = 2
 
-    class RedBlackNode(BinaryTreePointers.TreeNode):
+    class TreeNode(BinaryTreePointers.TreeNode):
         """
         Chapter 13: Like a binary tree node except it includes color.
         """
 
         def __init__(self, key):
-            RedBlackTree.TreeNode.__init__(self, key)
+            BinaryTreePointers.TreeNode.__init__(self, key)
             self.color = None
 
     def __init__(self):
         BinaryTreePointersSentinel.__init__(self)
-        self.sentinel = RedBlackTree.RedBlackNode(None)
+        self.sentinel = RedBlackTree.TreeNode(None)
         self.sentinel.color = RedBlackTree.Color.black
         self.root = self.sentinel
 
@@ -780,8 +780,8 @@ class RedBlackTree(BinaryTreePointersSentinel):
         Chapter 13: Inserts into the red black tree.
         :param z: The node or key to insert.
         """
-        if not isinstance(z, RedBlackTree.RedBlackNode):
-            z = RedBlackTree.RedBlackNode(z)
+        if not isinstance(z, RedBlackTree.TreeNode):
+            z = RedBlackTree.TreeNode(z)
 
         y = self.sentinel
         x = self.root
@@ -944,15 +944,15 @@ class RedBlackTree(BinaryTreePointersSentinel):
 
 
 class OrderStatisticTree(RedBlackTree):
-    class TreeNode(RedBlackTree.RedBlackNode):
+    class TreeNode(RedBlackTree.TreeNode):
         def __init__(self, key):
             """
             Initializes a new instance of the TreeNode class.
-            The difference between this TreeNode and the RedBlackTree RedBlackNode is that this
+            The difference between this TreeNode and the RedBlackTree TreeNode is that this
             includes a size. The size is total number of elements in the left and right subtrees plus 1
             to include this node.
             """
-            RedBlackTree.RedBlackNode.__init__(self, key)
+            RedBlackTree.TreeNode.__init__(self, key)
             self.size = 0
 
     def __init__(self):
@@ -1000,8 +1000,8 @@ class OrderStatisticTree(RedBlackTree):
         Chapter 13: Inserts into the red black tree.
         :param z: The node or key to insert.
         """
-        if not isinstance(z, RedBlackTree.RedBlackNode):
-            z = OrderStatisticTree.RedBlackNode(z)
+        if not isinstance(z, RedBlackTree.TreeNode):
+            z = OrderStatisticTree.TreeNode(z)
             z.size = 1
 
         y = self.sentinel
@@ -1141,7 +1141,7 @@ class OrderStatisticTree(RedBlackTree):
 
 
 class IntervalTree(RedBlackTree):
-    class TreeNode(RedBlackTree.RedBlackNode):
+    class TreeNode(RedBlackTree.TreeNode):
         class Interval:
             def __init__(self, node):
                 self.node = node
@@ -1163,7 +1163,7 @@ class IntervalTree(RedBlackTree):
                 return "[" + str(self.low) + "," + str(self.high) + "]"
 
         def __init__(self, key, high=None, max=None):
-            RedBlackTree.RedBlackNode.__init__(self, key)
+            RedBlackTree.TreeNode.__init__(self, key)
             self.int = IntervalTree.TreeNode.Interval(self)
             self.int.high = high
             self.max = max
