@@ -533,4 +533,9 @@ class TestIntervalTree(TestCase):
         tree.interval_insert(6, 10, 10)
         tree.interval_insert(19, 20, 20)
 
-
+        # Find the overlapping node
+        overlapping_node = tree.interval_search(IntervalTree.TreeNode(22, 25))
+        self.assertEqual(overlapping_node.key, 15)
+        self.assertEqual(overlapping_node.int.low, 15)
+        self.assertEqual(overlapping_node.int.high, 23)
+        self.assertEqual(overlapping_node.max, 23)

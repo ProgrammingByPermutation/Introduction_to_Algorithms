@@ -1143,6 +1143,10 @@ class OrderStatisticTree(RedBlackTree):
 class IntervalTree(RedBlackTree):
     class TreeNode(RedBlackTree.TreeNode):
         class Interval:
+            """
+            Chapter 14: Interval, the parent node's key matches this nodes low.
+            """
+
             def __init__(self, node):
                 self.node = node
                 self.high = None
@@ -1178,13 +1182,39 @@ class IntervalTree(RedBlackTree):
             self.key = value
 
     def interval_insert(self, k, high=None, max=None):
+        """
+        Chapter 14: Inserts a node into the tree.
+        :param k: The key to insert. (Matches the low value of the interval)
+        :param high: The high value of the interval.
+        :param max: The max value of the node.
+        """
         if not isinstance(k, IntervalTree.TreeNode):
             k = IntervalTree.TreeNode(k, high, max)
 
         RedBlackTree.rb_insert(self, k)
 
     def interval_delete(self, z):
-        RedBlackTree.rb_delete(self, z)
+        """
+        Chapter 14: Removes the passed in node.
+        :param z: The node to remove.
+        :return: The node that was removed.
+        """
+        return RedBlackTree.rb_delete(self, z)
+
+    def interval_search(self, i):
+        """
+        Chapter 14: Searches for an overlapping interval to the passed in node.
+        :param i: A TreeNode to find an overlap for.
+        :return: The node that overlaps the passed in interval.
+        """
+        x = self.root
+        while x != self.sentinel and not (i.int.low <= x.int.high and x.int.low <= i.int.high):
+            if x.left != self.sentinel and x.left.max >= i.int.low:
+                x = x.left
+            else:
+                x = x.right
+
+        return x
 
 
 class RootedTree:
