@@ -450,7 +450,7 @@ class TestRedBlackTree(TestCase):
 
 
 class TestOrderStatisticTree(TestCase):
-    def test_insert(self):
+    def test_all(self):
         tree = OrderStatisticTree()
         tree.rb_insert(26)
         tree.rb_insert(17)
@@ -517,3 +517,20 @@ class TestOrderStatisticTree(TestCase):
         self.assertEqual(tree.tree_search(tree.root, 35).size, 1)
         self.assertEqual(tree.tree_search(tree.root, 39), tree.sentinel)
         self.assertEqual(tree.tree_search(tree.root, 3).size, 1)
+
+
+class TestIntervalTree(TestCase):
+    def test_all(self):
+        tree = IntervalTree()
+        tree.interval_insert(16, 21, 30)
+        tree.interval_insert(8, 9, 23)
+        tree.interval_insert(25, 30, 30)
+        tree.interval_insert(5, 8, 10)
+        tree.interval_insert(15, 23, 23)
+        tree.interval_insert(17, 19, 20)
+        tree.interval_insert(26, 26, 26)
+        tree.interval_insert(0, 3, 3)
+        tree.interval_insert(6, 10, 10)
+        tree.interval_insert(19, 20, 20)
+
+

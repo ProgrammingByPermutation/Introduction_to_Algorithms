@@ -199,7 +199,7 @@ class LinkedList:
         Chapter 10: Inserts the provided key into the head of the list.
         :param x: The key to insert into the collection.
         """
-        if type(x) is not LinkedList.LinkedListNode:
+        if not isinstance(x, LinkedList.LinkedListNode):
             x = LinkedList.LinkedListNode(x)
         x.next_node = self.head
         if self.head is not None:
@@ -213,7 +213,7 @@ class LinkedList:
         :param x: The key to remove.
         """
         # Not in the original code, just here for convenience.
-        if type(x) is not LinkedList.LinkedListNode:
+        if not isinstance(x, LinkedList.LinkedListNode):
             x = self.list_search(x)
 
         if x.prev_node is not None:
@@ -312,7 +312,7 @@ class LinkedListSentinel:
         :param x: The key to remove.
         """
         # Not in the original code, just here for convenience.
-        if type(x) is not LinkedListSentinel.LinkedListNode:
+        if not isinstance(x, LinkedListSentinel.LinkedListNode):
             x = self.list_search(x)
 
         x.prev_node.next_node = x.next_node
@@ -366,7 +366,7 @@ class BinarySearchTree(BinaryTreePointers):
         Chapter 12: Inserts the given node into the tree.
         :param z: The node or value to add to the tree.
         """
-        if type(z) is not BinaryTreePointers.TreeNode:
+        if not isinstance(z, BinaryTreePointers.TreeNode):
             z = BinaryTreePointers.TreeNode(z)
 
         z.left = None
@@ -717,7 +717,7 @@ class RedBlackTree(BinaryTreePointersSentinel):
 
     def left_rotate(self, x):
         """
-        Chapter 13: Performs a left rotation on the passed in node. Left rotations assume that the right child (y) is not the
+        Chapter 13: Performs a left rotation on the passed in node. Left rotations assume that the right child (y,  the
         sentinel value. A left rotation pivots the around the link from x to y. It makes y the new root of the
         subtree, with x as y's left and y's left child as x's right child.
         :param x: The node to rotate.
@@ -780,8 +780,8 @@ class RedBlackTree(BinaryTreePointersSentinel):
         Chapter 13: Inserts into the red black tree.
         :param z: The node or key to insert.
         """
-        if type(z) is not RedBlackTree.TreeNode:
-            z = RedBlackTree.TreeNode(z)
+        if not isinstance(z, RedBlackTree.RedBlackNode):
+            z = RedBlackTree.RedBlackNode(z)
 
         y = self.sentinel
         x = self.root
@@ -1000,8 +1000,8 @@ class OrderStatisticTree(RedBlackTree):
         Chapter 13: Inserts into the red black tree.
         :param z: The node or key to insert.
         """
-        if type(z) is not RedBlackTree.TreeNode:
-            z = OrderStatisticTree.TreeNode(z)
+        if not isinstance(z, RedBlackTree.RedBlackNode):
+            z = OrderStatisticTree.RedBlackNode(z)
             z.size = 1
 
         y = self.sentinel
@@ -1071,7 +1071,7 @@ class OrderStatisticTree(RedBlackTree):
 
     def left_rotate(self, x):
         """
-        Chapter 13: Performs a left rotation on the passed in node. Left rotations assume that the right child (y) is not the
+        Chapter 13: Performs a left rotation on the passed in node. Left rotations assume that the right child (y,  the
         sentinel value. A left rotation pivots the around the link from x to y. It makes y the new root of the
         subtree, with x as y's left and y's left child as x's right child.
         :param x: The node to rotate.
@@ -1140,6 +1140,53 @@ class OrderStatisticTree(RedBlackTree):
         x.size = x.right.size + x.left.size + 1
 
 
+class IntervalTree(RedBlackTree):
+    class TreeNode(RedBlackTree.RedBlackNode):
+        class Interval:
+            def __init__(self, node):
+                self.node = node
+                self.high = None
+
+            def __getattr__(self, item):
+                if item == "low":
+                    return self.node.key
+
+                raise AttributeError
+
+            def __setattr__(self, key, value):
+                if key == "low":
+                    self.node.key = value
+
+                self.__dict__[key] = value
+
+            def __str__(self):
+                return "[" + str(self.low) + "," + str(self.high) + "]"
+
+        def __init__(self, key, high=None, max=None):
+            RedBlackTree.RedBlackNode.__init__(self, key)
+            self.int = IntervalTree.TreeNode.Interval(self)
+            self.int.high = high
+            self.max = max
+
+        def __str__(self):
+            return str(self.int) + " " + str(self.max)
+
+        def get_low(self):
+            return self.key
+
+        def set_low(self, value):
+            self.key = value
+
+    def interval_insert(self, k, high=None, max=None):
+        if not isinstance(k, IntervalTree.TreeNode):
+            k = IntervalTree.TreeNode(k, high, max)
+
+        RedBlackTree.rb_insert(self, k)
+
+    def interval_delete(self, z):
+        RedBlackTree.rb_delete(self, z)
+
+
 class RootedTree:
     """
     Chapter 10: A tree with an unbounded number of child nodes. Nodes have a pointer to the parent, left child, and
@@ -1202,7 +1249,7 @@ class DirectAccessTable:
         :param x: The key value to insert or the DirectAccessTable.Entry to add.
         :param satellite_data: The satellite data to include. Will not be used if x is DirectAccessTable.Entry.
         """
-        if type(x) is not DirectAccessTable.Entry:
+        if not isinstance(x, DirectAccessTable.Entry):
             x = DirectAccessTable.Entry(x, satellite_data)
 
         self[x.key] = x
@@ -1212,7 +1259,7 @@ class DirectAccessTable:
         Chapter 11: Removes an entry from the DirectAccessTable.
         :param x: The key value or the DirectAccessTable.Entry to remove.
         """
-        if type(x) is not DirectAccessTable.Entry:
+        if not isinstance(x, DirectAccessTable.Entry):
             x = DirectAccessTable.Entry(x)
 
         self[x.key] = None
@@ -1321,12 +1368,12 @@ class HashTable:
         Chapter 11: Inserts a value into the linked list at a given hash table location.
         :param x: The value to insert into the hash table.
         """
-        if type(x) is not LinkedList.LinkedListNode:
+        if not isinstance(x, LinkedList.LinkedListNode):
             x = LinkedList.LinkedListNode(x)
 
         hash = self.hash_function(x.key)
         linked_list = self.hash_table[hash]
-        if type(linked_list) is not LinkedList:
+        if not isinstance(linked_list, LinkedList):
             curr_value = linked_list
             linked_list = LinkedList()
             linked_list.list_insert(curr_value)
@@ -1376,7 +1423,7 @@ class HashTable:
         :return: The hash of the found key in the table. None if not found.
         """
         j = self.hash_function(k)
-        if type(self.hash_table[j]) is LinkedList:
+        if isinstance(self.hash_table[j], LinkedList):
             node = self.hash_table[j].head
             while node is not None:
                 if node.key == k:
