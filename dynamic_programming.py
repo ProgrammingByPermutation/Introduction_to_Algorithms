@@ -9,14 +9,14 @@ def fastest_way(a, t, e, x, n):
     :param e: The entrance time for the first station on line 1 or 2. A one dimensional array [1...2].
     :param x: The exit time for the last station on line 1 or 2. A one dimensional array [1...2].
     :param n: The number of stations.
-    :return: A tuple where (fastest time through station, fastest station number, an array of fastest stations)
+    :return: A tuple where (fastest time through station, fastest line number to leave on, an array of fastest stations)
 
     The array of fastest stations (l) is setup such that l[line number][station number] is the fastest station
     (station number - 1) through station [line number][station number]. That being the case there is no index #1 since
     nothing proceeds the first station.
 
     To trace the fasted route from the output you would do the following:
-    Start at "fastest station number". Assuming this is 1, we use station[1, n].
+    Start at "fastest line number to leave on". Assuming this is 1, we use station[1, n].
     Next we look at l[1][n] and use it's value. Assuming it's 2, we use station [2, n -1]
     Next we look at l[2][n - 1] and use it's value. Etc etc etc.
 
