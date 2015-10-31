@@ -55,8 +55,37 @@ def fastest_way(a, t, e, x, n):
 
 
 def print_stations(l, l_star, n):
+    """
+    Chapter 15: Prints the fastest way through the stations using the output of fastest_way.
+    :param l: An array of the fastest way through the stations.
+    :param l_star: The fastest station to exit from.
+    :param n: The number of stations.
+    """
     i = l_star
     print("line " + str(i) + ", station " + str(n))
     for j in range(n, 1, -1):
         i = l[i][j]
         print("line " + str(i) + ", station " + str(j - 1))
+
+
+def matrix_multiply(a, b):
+    """
+    Multiplies two matrices. Matrices are assumed to use a 1 based index.
+    :param a: The first matrix.
+    :param b: The second matrix.
+    :return: A matrix product.
+    """
+    # TODO: UNTESTED!
+    if a.columns != b.rows:
+        raise Exception("incompatible dimensions")
+
+    c = [None] * (a.rows + 1)
+    for i in range(len(C)):
+        c[i] = [None] * (b.columns + 1)
+
+    for i in range(1, a.rows + 1):
+        for j in range(1, b.columns + 1):
+            c[i][j] = 0
+
+            for k in range(1, a.columns + 1):
+                c[i][j] = c[i][j] + a[i][k] * b[k][j]
