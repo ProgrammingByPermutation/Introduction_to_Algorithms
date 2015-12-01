@@ -1,6 +1,6 @@
-import random
-import math
 import enum
+import math
+import random
 
 
 class OneBasedList:
@@ -47,6 +47,9 @@ class OneBasedList:
         return len(self.list)
 
     def __str__(self):
+        return str(self.list)
+
+    def __repr__(self):
         return str(self.list)
 
 

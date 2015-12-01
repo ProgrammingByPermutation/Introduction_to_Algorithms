@@ -1,7 +1,6 @@
 from unittest import TestCase
 
 from dynamic_programming import *
-from data_structures import *
 
 
 class TestFastestWay(TestCase):
@@ -20,7 +19,6 @@ class TestFastestWay(TestCase):
 
         f_star, l_star, l = fastest_way(a, t, e, x, n)
 
-
         # Output should be:
         # line 1, station 6
         # line 2, station 5
@@ -29,3 +27,12 @@ class TestFastestWay(TestCase):
         # line 2, station 2
         # line 1, station 1
         # print_stations(l, l_star, n)
+
+
+class MatrixMultiplication(TestCase):
+    def test_matrix_multiply(self):
+        m = numpy.matrix('1 2 3; 4 5 6')
+        n = numpy.matrix('7 8; 9 10; 11 12')
+
+        output = matrix_multiply(m, n)
+        self.assertTrue((output == numpy.matrix('58 64; 139 154')).all())

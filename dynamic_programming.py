@@ -1,3 +1,5 @@
+import numpy
+
 from data_structures import OneBasedList
 
 
@@ -71,21 +73,27 @@ def print_stations(l, l_star, n):
 def matrix_multiply(a, b):
     """
     Multiplies two matrices. Matrices are assumed to use a 1 based index.
-    :param a: The first matrix.
-    :param b: The second matrix.
-    :return: A matrix product.
+    :param a: The first matrix, expected numpy.matrix.
+    :param b: The second matrix, expected numpy.matrix.
+    :return: A matrix product (numpy.matrix).
     """
-    # TODO: UNTESTED!
-    if a.columns != b.rows:
+
+    def columns(matrix):
+        return matrix.shape[1]
+
+    def rows(matrix):
+        return matrix.shape[0]
+
+    if columns(a) != rows(b):
         raise Exception("incompatible dimensions")
 
-    c = [None] * (a.rows + 1)
-    for i in range(len(C)):
-        c[i] = [None] * (b.columns + 1)
+    c = numpy.matrix([[None] * columns(b)] * rows(a))
 
-    for i in range(1, a.rows + 1):
-        for j in range(1, b.columns + 1):
-            c[i][j] = 0
+    for i in range(0, rows(a)):
+        for j in range(0, columns(b)):
+            c[i, j] = 0
 
-            for k in range(1, a.columns + 1):
-                c[i][j] = c[i][j] + a[i][k] * b[k][j]
+            for k in range(0, columns(a)):
+                c[i, j] = c[i, j] + a[i, k] * b[k, j]
+
+    return c
