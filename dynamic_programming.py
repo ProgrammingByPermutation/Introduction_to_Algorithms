@@ -138,3 +138,23 @@ def matrix_chain_order(p):
                     s[i, j] = k
 
     return m, s
+
+
+def print_optimal_parens(s, i, j, output=""):
+    """
+    Chapter 15: Returns a string that represents the optimal matrix multiplication using parenthesis.
+    :param s: The matrix representing the optimal matrix chain order from the matrix_chain_order method.
+    :param i: The start index of the s array. (usually 0)
+    :param j: The number of elements in the array.
+    :param output: The output of the method to recursively pass.
+    :return: A string representing the optimal matrix multiplication using parenthesis.
+    """
+    if i == j:
+        output += "A"
+    else:
+        output += "("
+        output = print_optimal_parens(s, i, s[i, j], output)
+        output = print_optimal_parens(s, s[i, j] + 1, j, output)
+        output += ")"
+
+    return output

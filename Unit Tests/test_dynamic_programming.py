@@ -48,4 +48,7 @@ class MatrixMultiplication(TestCase):
         ]
 
         m, s = matrix_chain_order(p)
+        ordered_string = print_optimal_parens(s, 0, len(p) - 1)
+        
         self.assertEqual(m[0, len(p) - 1], 15125)
+        self.assertEqual(ordered_string, "((A(AA))((AA)A))")
