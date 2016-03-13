@@ -97,3 +97,44 @@ def matrix_multiply(a, b):
                 c[i, j] = c[i, j] + a[i, k] * b[k, j]
 
     return c
+
+
+def matrix_chain_order(p):
+    """
+    Calculates the optimal order of multiplication that should take place to minimize the number of
+    multiplications for a list of matrices.
+    :param p: A list of numpy.matrix objects. The order should reflection the multiplication order.
+    :return: A tuple where the first element is a numpy.matrix of the minimum number of multiplications required for
+             each permutation of matrix multiplication. The total minimum will be at [0, len(p) - 1]. The second element
+             is the numpy.matrix of indexes that achieved the optimal costs for the first element's table.
+    """
+    # To be a little more user friendly, we will convert the array of matrices to an array of dimensions that need
+    # to be multiplied.
+    #
+    # It will be:
+    # [The # of row elements for each matrix] + [The # of columns elements for the last matrix]
+    #
+    # This represents matrix multiplications where [A x B] * [B x C] would be A * B * C multiplications.
+    p = [p[x].shape[0] for x in range(len(p))] + [p[len(p) - 1].shape[1]]
+
+    # By the book code below
+    n = len(p) - 1
+
+    # Create the return matrices
+    m = numpy.matrix([[0] * n] * n)
+    s = numpy.matrix([[0] * n] * n)
+
+    for l in range(1, n):
+        for i in range(0, n - l):
+            j = i + l
+            m[i, j] = -1
+            for k in range(i, j):
+                # Add every permutation of (the total previous matrix *) + (the new matrix *)
+                q = m[i, k] + m[k + 1, j] + p[i] * p[k + 1] * p[j + 1]
+
+                # If this entry hasn't be set OR the total matrix * is less than the previous, set the new values
+                if q < m[i, j] or m[i, j] == -1:
+                    m[i, j] = q
+                    s[i, j] = k
+
+    return m, s

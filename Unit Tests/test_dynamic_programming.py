@@ -36,3 +36,16 @@ class MatrixMultiplication(TestCase):
 
         output = matrix_multiply(m, n)
         self.assertTrue((output == numpy.matrix('58 64; 139 154')).all())
+
+    def test_matrix_chain_order(self):
+        p = [
+            numpy.matrix([[0] * 35] * 30),
+            numpy.matrix([[0] * 15] * 35),
+            numpy.matrix([[0] * 5] * 15),
+            numpy.matrix([[0] * 10] * 5),
+            numpy.matrix([[0] * 20] * 10),
+            numpy.matrix([[0] * 25] * 20)
+        ]
+
+        m, s = matrix_chain_order(p)
+        self.assertEqual(m[0, len(p) - 1], 15125)
