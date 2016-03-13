@@ -72,7 +72,7 @@ def print_stations(l, l_star, n):
 
 def matrix_multiply(a, b):
     """
-    Multiplies two matrices. Matrices are assumed to use a 1 based index.
+    Chapter 15: Multiplies two matrices. Matrices are assumed to use a 1 based index.
     :param a: The first matrix, expected numpy.matrix.
     :param b: The second matrix, expected numpy.matrix.
     :return: A matrix product (numpy.matrix).
@@ -101,7 +101,7 @@ def matrix_multiply(a, b):
 
 def matrix_chain_order(p):
     """
-    Calculates the optimal order of multiplication that should take place to minimize the number of
+    Chapter 15: Calculates the optimal order of multiplication that should take place to minimize the number of
     multiplications for a list of matrices.
     :param p: A list of numpy.matrix objects. The order should reflection the multiplication order.
     :return: A tuple where the first element is a numpy.matrix of the minimum number of multiplications required for
