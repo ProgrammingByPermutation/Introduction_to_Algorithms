@@ -49,6 +49,13 @@ class MatrixMultiplication(TestCase):
 
         m, s = matrix_chain_order(p)
         ordered_string = print_optimal_parens(s, 0, len(p) - 1)
-        
+
+        dims = [p[x].shape[0] for x in range(len(p))] + [p[len(p) - 1].shape[1]]
+        recursive_solution = recursive_matrix_chain(dims, 0, len(dims) - 2)
+
+        memoized_solution = memoized_matrix_chain(p)
+
         self.assertEqual(m[0, len(p) - 1], 15125)
         self.assertEqual(ordered_string, "((A(AA))((AA)A))")
+        self.assertEqual(recursive_solution, 15125)
+        self.assertEqual(memoized_solution, 15125)

@@ -102,7 +102,7 @@ def matrix_multiply(a, b):
 def matrix_chain_order(p):
     """
     Chapter 15: Calculates the optimal order of multiplication that should take place to minimize the number of
-    multiplications for a list of matrices.
+    multiplications for a list of matrices. The technique used here is bottom up.
     :param p: A list of numpy.matrix objects. The order should reflection the multiplication order.
     :return: A tuple where the first element is a numpy.matrix of the minimum number of multiplications required for
              each permutation of matrix multiplication. The total minimum will be at [0, len(p) - 1]. The second element
@@ -158,3 +158,78 @@ def print_optimal_parens(s, i, j, output=""):
         output += ")"
 
     return output
+
+
+def recursive_matrix_chain(p, i, j):
+    """
+    Chapter 15: Recursively finds the optimal number of multiplications for a chain of matrices being multiplied.
+    :param p: An array representing the dimensions that need to be multiplied in order of multiplication.
+    :param i: The starting index.
+    :param j: The second to last index.
+    :return: The minimum number of multiplications for a chain of matrices being multiplied.
+    """
+    if i == j:
+        return 0
+
+    # This is the book's code. There is absolutely no reason for m to exist as an indexable matrix,
+    # this would be much cleaner and more correct as a number. Perhaps a typo where they meant to pass the
+    # matrix around as a reference in the parameters? Or maybe their theoretical programming language would handle
+    # this more sensibly?
+    m = numpy.matrix([[0] * (j + 1)] * (i + 1))
+    m[i, j] = -1
+    for k in range(i, j):
+        q = recursive_matrix_chain(p, i, k) + recursive_matrix_chain(p, k + 1, j) + (p[i] * p[k + 1] * p[j + 1])
+        if q < m[i, j] or m[i, j] == -1:
+            m[i, j] = q
+
+    return m[i, j]
+
+
+def memoized_matrix_chain(p):
+    """
+    Chapter 15: Recursively finds the optimal number of multiplications for a chain of matrices being multiplied. This,
+    unlike recursive_matrix_chain, utilizes a cache. The technique used here is top-down.
+    :param p: A list of numpy.matrix objects. The order should reflection the multiplication order.
+    :return: The minimum number of multiplications for a chain of matrices being multiplied.
+    """
+    # To be a little more user friendly, we will convert the array of matrices to an array of dimensions that need
+    # to be multiplied.
+    #
+    # It will be:
+    # [The # of row elements for each matrix] + [The # of columns elements for the last matrix]
+    #
+    # This represents matrix multiplications where [A x B] * [B x C] would be A * B * C multiplications.
+    p = [p[x].shape[0] for x in range(len(p))] + [p[len(p) - 1].shape[1]]
+
+    n = len(p) - 1
+    m = numpy.matrix([[0] * n] * n)
+
+    for i in range(0, n):
+        for j in range(i, n):
+            m[i, j] = -1
+
+    return lookup_chain(p, 0, n - 1, m)
+
+
+def lookup_chain(p, i, j, m):
+    """
+    Chapter 15: Looks up what the number of multiplications in a chain of matrix multiplications. This uses cache. The
+    technique used here is top-down.
+    :param p: An array representing the dimensions that need to be multiplied in order of multiplication.
+    :param i: The starting index.
+    :param j: The index of the last item.
+    :param m: The cache matrix. (Not in the books code, appears to be an oversight?)
+    :return: The minimum number of multiplications for a chain of matrices being multiplied.
+    """
+    if m[i, j] != -1:
+        return m[i, j]
+
+    if i == j:
+        m[i, j] = 0
+    else:
+        for k in range(i, j):
+            q = lookup_chain(p, i, k, m) + lookup_chain(p, k + 1, j, m) + p[i] * p[k + 1] * p[j + 1]
+            if q < m[i, j] or m[i, j] == -1:
+                m[i, j] = q
+
+    return m[i, j]
