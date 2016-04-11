@@ -233,3 +233,63 @@ def lookup_chain(p, i, j, m):
                 m[i, j] = q
 
     return m[i, j]
+
+
+def lcs_length(x, y):
+    """
+    Determines the longest common subsequence between two sequences.
+    :param x: The first sequence.
+    :param y: The second sequence.
+    :return: Two multidimensional arrays
+    """
+    m = len(x)
+    n = len(y)
+
+    # c is of size [m, n]
+    # b is of size [m, n]
+    c = [x[:] for x in [[None] * (n + 1)] * (m + 1)]
+    b = [x[:] for x in [[None] * (n + 1)] * (m + 1)]
+
+    for i in range(1, m + 1):
+        c[i][0] = 0
+
+    for j in range(0, n + 1):
+        c[0][j] = 0
+
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if x[i - 1] == y[j - 1]:
+                c[i][j] = c[i - 1][j - 1] + 1
+                b[i][j] = "up_left"
+            elif c[i - 1][j] >= c[i][j - 1]:
+                c[i][j] = c[i - 1][j]
+                b[i][j] = "up"
+            else:
+                c[i][j] = c[i][j - 1]
+                b[i][j] = "left"
+
+    return c, b
+
+
+def print_lcs(b, X, i=None, j=None):
+    """
+    Prints the longest common subsequence in order.
+    :param b: The b multidimensional array output from lcs_length.
+    :param X: The first sequence provided to the original lcs_length.
+    :param i: The number of rows in b.
+    :param j: The number of columns in b.
+    """
+    if i is None or j is None:
+        i = len(b) - 1
+        j = len(b[0]) - 1
+
+    if i == 0 or j == 0:
+        return ""
+
+    if b[i][j] == "up_left":
+        x = print_lcs(b, X, i - 1, j - 1)
+        return x + X[i - 1]
+    elif b[i][j] == "up":
+        return print_lcs(b, X, i - 1, j)
+    else:
+        return print_lcs(b, X, i, j - 1)

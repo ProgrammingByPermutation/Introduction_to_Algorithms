@@ -59,3 +59,31 @@ class MatrixMultiplication(TestCase):
         self.assertEqual(ordered_string, "((A(AA))((AA)A))")
         self.assertEqual(recursive_solution, 15125)
         self.assertEqual(memoized_solution, 15125)
+
+
+class LCS(TestCase):
+    def test_lcs_length(self):
+        x = ['A', 'B', 'C', 'B', 'D', 'A', 'B']
+        y = ['B', 'D', 'C', 'A', 'B', 'A']
+        c, b = lcs_length(x, y)
+
+        # Accept answers
+        self.assertEqual(c[0], [0, 0, 0, 0, 0, 0, 0])
+        self.assertEqual(c[1], [0, 0, 0, 0, 1, 1, 1])
+        self.assertEqual(c[2], [0, 1, 1, 1, 1, 2, 2])
+        self.assertEqual(c[3], [0, 1, 1, 2, 2, 2, 2])
+        self.assertEqual(c[4], [0, 1, 1, 2, 2, 3, 3])
+        self.assertEqual(c[5], [0, 1, 2, 2, 2, 3, 3])
+        self.assertEqual(c[6], [0, 1, 2, 2, 3, 3, 4])
+        self.assertEqual(c[7], [0, 1, 2, 2, 3, 4, 4])
+
+        self.assertEqual(b[0], [None, None, None, None, None, None, None])
+        self.assertEqual(b[1], [None, "up", "up", "up", "up_left", "left", "up_left"])
+        self.assertEqual(b[2], [None, "up_left", "left", "left", "up", "up_left", "left"])
+        self.assertEqual(b[3], [None, "up", "up", "up_left", "left", "up", "up"])
+        self.assertEqual(b[4], [None, "up_left", "up", "up", "up", "up_left", "left"])
+        self.assertEqual(b[5], [None, "up", "up_left", "up", "up", "up", "up"])
+        self.assertEqual(b[6], [None, "up", "up", "up", "up_left", "up", "up_left"])
+        self.assertEqual(b[7], [None, "up_left", "up", "up", "up", "up_left", "up"])
+
+        self.assertEqual(print_lcs(b, x), "BCBA")
